@@ -1,0 +1,6 @@
+{
+  "name": "DSA Stack Interactive Lab",
+  "description": "Interactive data structures and algorithms stack visualizer with animated operations, line-by-line Python code explanations, real-world simulations, and interactive exercises.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
