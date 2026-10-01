@@ -8,10 +8,12 @@ import {
   CheckCircle, 
   Hash, 
   AlertOctagon,
-  Layers
 } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
 export function CoreOperations() {
+  const { isDark } = useTheme();
+
   const operations = [
     {
       name: 'push(element)',
@@ -19,9 +21,11 @@ export function CoreOperations() {
       time: 'O(1) amortized',
       space: 'O(1)',
       icon: ArrowDownCircle,
-      iconColor: 'text-emerald-400',
-      borderColor: 'border-emerald-500/30',
-      bgGlow: 'bg-emerald-950/20',
+      iconColor: 'text-emerald-500',
+      borderColorDark: 'border-emerald-500/30',
+      borderColorLight: 'border-emerald-300',
+      bgGlowDark: 'bg-emerald-950/20',
+      bgGlowLight: 'bg-emerald-50',
       description: 'Places a new data item at the top of the stack. In dynamic arrays, if buffer capacity is exhausted, memory is doubled before insertion.',
       pythonCode: 'stack.append(element)',
       invariants: 'Stack size increments by 1. The new element becomes the top.',
@@ -32,9 +36,11 @@ export function CoreOperations() {
       time: 'O(1) strict',
       space: 'O(1)',
       icon: ArrowUpCircle,
-      iconColor: 'text-rose-400',
-      borderColor: 'border-rose-500/30',
-      bgGlow: 'bg-rose-950/20',
+      iconColor: 'text-rose-500',
+      borderColorDark: 'border-rose-500/30',
+      borderColorLight: 'border-rose-300',
+      bgGlowDark: 'bg-rose-950/20',
+      bgGlowLight: 'bg-rose-50',
       description: 'Extracts the most recently pushed element and hands it back to the caller. Must check isEmpty() to prevent Stack Underflow.',
       pythonCode: 'item = stack.pop()',
       invariants: 'Stack size decrements by 1. Item beneath becomes the new top.',
@@ -45,9 +51,11 @@ export function CoreOperations() {
       time: 'O(1) strict',
       space: 'O(1)',
       icon: Eye,
-      iconColor: 'text-cyan-400',
-      borderColor: 'border-cyan-500/30',
-      bgGlow: 'bg-cyan-950/20',
+      iconColor: 'text-cyan-500',
+      borderColorDark: 'border-cyan-500/30',
+      borderColorLight: 'border-cyan-300',
+      bgGlowDark: 'bg-cyan-950/20',
+      bgGlowLight: 'bg-cyan-50',
       description: 'Observes the topmost element without modifying internal array state or popping it off. Safe read-only inspection.',
       pythonCode: 'item = stack[-1]',
       invariants: 'Stack state, size, and order remain completely unchanged.',
@@ -58,9 +66,11 @@ export function CoreOperations() {
       time: 'O(1) strict',
       space: 'O(1)',
       icon: CheckCircle,
-      iconColor: 'text-indigo-400',
-      borderColor: 'border-indigo-500/30',
-      bgGlow: 'bg-indigo-950/20',
+      iconColor: 'text-indigo-500',
+      borderColorDark: 'border-indigo-500/30',
+      borderColorLight: 'border-indigo-300',
+      bgGlowDark: 'bg-indigo-950/20',
+      bgGlowLight: 'bg-indigo-50',
       description: 'Returns boolean True if no elements reside in the stack, preventing dangerous underflow operations before executing pop() or peek().',
       pythonCode: 'return len(stack) == 0',
       invariants: 'Pure predicate function; zero side-effects.',
@@ -71,9 +81,11 @@ export function CoreOperations() {
       time: 'O(1) strict',
       space: 'O(1)',
       icon: Hash,
-      iconColor: 'text-violet-400',
-      borderColor: 'border-violet-500/30',
-      bgGlow: 'bg-violet-950/20',
+      iconColor: 'text-violet-500',
+      borderColorDark: 'border-violet-500/30',
+      borderColorLight: 'border-violet-300',
+      bgGlowDark: 'bg-violet-950/20',
+      bgGlowLight: 'bg-violet-50',
       description: 'Returns current height of the stack. CPython caches the size counter in the list header struct, so length calculation requires zero iteration.',
       pythonCode: 'return len(stack)',
       invariants: 'Integer value between 0 and capacity.',
@@ -84,9 +96,11 @@ export function CoreOperations() {
       time: 'O(1) strict',
       space: 'O(1)',
       icon: AlertOctagon,
-      iconColor: 'text-amber-400',
-      borderColor: 'border-amber-500/30',
-      bgGlow: 'bg-amber-950/20',
+      iconColor: 'text-amber-500',
+      borderColorDark: 'border-amber-500/30',
+      borderColorLight: 'border-amber-300',
+      bgGlowDark: 'bg-amber-950/20',
+      bgGlowLight: 'bg-amber-50',
       description: 'In bounded physical hardware buffers or fixed-length stacks, returns True if size has reached max capacity, guarding against overflow.',
       pythonCode: 'return len(stack) >= capacity',
       invariants: 'Signals when push() will trigger Stack Overflow.',
@@ -94,19 +108,25 @@ export function CoreOperations() {
   ];
 
   return (
-    <section id="operations" className="py-16 border-b border-slate-800 bg-slate-900/30">
+    <section id="operations" className={`py-16 border-b transition-colors ${
+      isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-200 bg-white'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-10">
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-400 mb-2">
+          <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
+            isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
+          }`}>
             <span>ABSTRACT DATA TYPE (ADT)</span>
             <span aria-hidden="true">·</span>
             <span>CORE PRIMITIVES</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
+            isDark ? 'text-white' : 'text-slate-950'
+          }`}>
             Fundamental Stack Operations
           </h2>
-          <p className="mt-1 text-sm text-slate-400 max-w-2xl">
+          <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             The mathematical contract of the Stack data structure. Each method executes with strict asymptotic performance bounds.
           </p>
         </div>
@@ -118,20 +138,28 @@ export function CoreOperations() {
             return (
               <div
                 key={op.name}
-                className={`rounded-2xl border ${op.borderColor} bg-slate-950/70 p-6 flex flex-col justify-between hover:border-slate-600 transition-colors shadow-sm`}
+                className={`rounded-2xl border p-6 flex flex-col justify-between transition-colors shadow-sm ${
+                  isDark
+                    ? `bg-slate-950/70 ${op.borderColorDark} hover:border-slate-600`
+                    : `bg-slate-50/70 ${op.borderColorLight} hover:border-slate-400`
+                }`}
               >
                 <div>
                   {/* Top Bar of Card */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2.5">
-                      <div className={`p-2 rounded-lg ${op.bgGlow} border border-slate-800`}>
+                      <div className={`p-2 rounded-lg border ${
+                        isDark 
+                          ? `${op.bgGlowDark} border-slate-800` 
+                          : `${op.bgGlowLight} border-slate-200`
+                      }`}>
                         <Icon className={`w-5 h-5 ${op.iconColor}`} />
                       </div>
                       <div>
-                        <h3 className="text-base font-bold font-mono text-white">
+                        <h3 className={`text-base font-bold font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {op.name}
                         </h3>
-                        <span className="text-xs text-slate-400">
+                        <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                           {op.action}
                         </span>
                       </div>
@@ -140,28 +168,40 @@ export function CoreOperations() {
 
                   {/* Asymptotic Metrics */}
                   <div className="flex items-center gap-2 text-xs font-mono mb-3">
-                    <span className="text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-900/60">
+                    <span className={`px-2 py-0.5 rounded border ${
+                      isDark
+                        ? 'text-emerald-400 bg-emerald-950/60 border-emerald-900/60'
+                        : 'text-emerald-800 bg-emerald-100 border-emerald-300 font-semibold'
+                    }`}>
                       Time: {op.time}
                     </span>
-                    <span className="text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-900/60">
+                    <span className={`px-2 py-0.5 rounded border ${
+                      isDark
+                        ? 'text-cyan-400 bg-cyan-950/60 border-cyan-900/60'
+                        : 'text-cyan-800 bg-cyan-100 border-cyan-300 font-semibold'
+                    }`}>
                       Space: {op.space}
                     </span>
                   </div>
 
                   {/* Description */}
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  <p className={`text-xs leading-relaxed mb-4 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                     {op.description}
                   </p>
                 </div>
 
                 {/* Code syntax & invariant */}
-                <div className="pt-4 border-t border-slate-800/80 space-y-2">
-                  <div className="p-2 rounded bg-slate-900 border border-slate-800 font-mono text-xs text-emerald-300 flex items-center justify-between">
+                <div className={`pt-4 border-t space-y-2 ${isDark ? 'border-slate-800/80' : 'border-slate-200'}`}>
+                  <div className={`p-2 rounded border font-mono text-xs flex items-center justify-between ${
+                    isDark
+                      ? 'bg-slate-900 border-slate-800 text-emerald-300'
+                      : 'bg-white border-slate-200 text-emerald-800 font-medium'
+                  }`}>
                     <span>{op.pythonCode}</span>
-                    <span className="text-[10px] text-slate-500">Python</span>
+                    <span className="text-[10px] text-slate-400">Python</span>
                   </div>
-                  <div className="text-[11px] text-slate-400 leading-snug">
-                    <strong className="text-slate-300">Invariant: </strong>
+                  <div className={`text-[11px] leading-snug ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <strong className={isDark ? 'text-slate-300' : 'text-slate-800'}>Invariant: </strong>
                     {op.invariants}
                   </div>
                 </div>

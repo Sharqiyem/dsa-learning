@@ -1,22 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { 
   CheckCircle, 
   XCircle, 
-  RotateCcw, 
-  RotateCw, 
   Play, 
   SkipForward, 
   Undo2, 
   Redo2, 
-  Layers, 
   Terminal,
   Cpu
 } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
 
 export function RealWorldSimulators() {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<'parentheses' | 'undoredo' | 'callstack'>('parentheses');
 
   // --- 1. Balanced Parentheses State ---
@@ -83,7 +82,6 @@ export function RealWorldSimulators() {
         setParenStep(parenInput.length);
       }
     } else {
-      // non-bracket character, skip
       setParenStep((prev) => prev + 1);
     }
   };
@@ -98,7 +96,7 @@ export function RealWorldSimulators() {
     if (!word) return;
     const newText = editorText ? `${editorText} ${word}` : word;
     setUndoStack((prev) => [...prev, newText]);
-    setRedoStack([]); // typing clears redo
+    setRedoStack([]);
     setEditorText(newText);
     setNextWord('');
   };
@@ -139,51 +137,65 @@ export function RealWorldSimulators() {
   const currentRec = recursionTimeline[recursionStep];
 
   return (
-    <section id="applications" className="py-16 border-b border-slate-800 bg-slate-900/50">
+    <section id="applications" className={`py-16 border-b transition-colors ${
+      isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-slate-50/50'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 mb-2">
+          <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
+            isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'
+          }`}>
             <span>REAL-WORLD SYSTEMS</span>
             <span aria-hidden="true">·</span>
             <span>WHY STACKS MATTER</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
+            isDark ? 'text-white' : 'text-slate-950'
+          }`}>
             Applied Stack Simulations
           </h2>
-          <p className="mt-1 text-sm text-slate-400 max-w-2xl">
+          <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Explore how modern software engineering relies on stacks for parsing compilers, managing document undo history, and allocating function activation frames.
           </p>
         </div>
 
         {/* Tab Selection */}
-        <div className="flex items-center gap-2 p-1.5 bg-slate-950/80 border border-slate-800 rounded-xl max-w-xl mb-8">
+        <div className={`flex items-center gap-2 p-1.5 border rounded-xl max-w-xl mb-8 ${
+          isDark ? 'bg-slate-950/80 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+        }`}>
           <button
             onClick={() => setActiveTab('parentheses')}
-            className={`flex-1 py-2 px-3 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex-1 py-2 px-3 text-xs rounded-lg transition-colors whitespace-nowrap ${
               activeTab === 'parentheses'
-                ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? isDark
+                  ? 'bg-slate-800 text-emerald-400 font-semibold shadow-sm'
+                  : 'bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200 shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             1. Balanced Brackets
           </button>
           <button
             onClick={() => setActiveTab('undoredo')}
-            className={`flex-1 py-2 px-3 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex-1 py-2 px-3 text-xs rounded-lg transition-colors whitespace-nowrap ${
               activeTab === 'undoredo'
-                ? 'bg-slate-800 text-cyan-400 font-semibold shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? isDark
+                  ? 'bg-slate-800 text-cyan-400 font-semibold shadow-sm'
+                  : 'bg-cyan-50 text-cyan-800 font-semibold border border-cyan-200 shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             2. Undo / Redo Stacks
           </button>
           <button
             onClick={() => setActiveTab('callstack')}
-            className={`flex-1 py-2 px-3 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex-1 py-2 px-3 text-xs rounded-lg transition-colors whitespace-nowrap ${
               activeTab === 'callstack'
-                ? 'bg-slate-800 text-violet-400 font-semibold shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? isDark
+                  ? 'bg-slate-800 text-violet-400 font-semibold shadow-sm'
+                  : 'bg-violet-50 text-violet-800 font-semibold border border-violet-200 shadow-sm'
+                : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             3. CPU Call Stack
@@ -193,15 +205,23 @@ export function RealWorldSimulators() {
         {/* --- TAB 1: BALANCED BRACKETS --- */}
         {activeTab === 'parentheses' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                <h3 className="text-sm font-semibold text-white">Syntax Scanner Visualizer</h3>
-                <span className="text-xs font-mono text-emerald-400">Compiler Lexer / AST</span>
+            <div className={`lg:col-span-7 border rounded-2xl p-6 transition-colors ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <div className={`flex items-center justify-between pb-3 border-b mb-4 ${
+                isDark ? 'border-slate-800' : 'border-slate-200'
+              }`}>
+                <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Syntax Scanner Visualizer
+                </h3>
+                <span className={`text-xs font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'}`}>
+                  Compiler Lexer / AST
+                </span>
               </div>
 
               {/* Input String Preview with Pointer */}
               <div className="mb-6">
-                <label className="block text-xs font-medium text-slate-400 mb-2">
+                <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   Input Expression:
                 </label>
                 <div className="flex gap-2 mb-3">
@@ -209,25 +229,31 @@ export function RealWorldSimulators() {
                     type="text"
                     value={parenInput}
                     onChange={(e) => resetParenTrace(e.target.value)}
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm font-mono text-white"
+                    className={`flex-1 border rounded-lg px-3 py-1.5 text-sm font-mono ${
+                      isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                    }`}
                   />
                   <button
                     onClick={() => resetParenTrace()}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs"
+                    className={`px-3 py-1.5 rounded-lg text-xs ${
+                      isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                    }`}
                   >
                     Reset
                   </button>
                 </div>
 
                 {/* Preset Chips */}
-                <div className="flex items-center gap-1.5 text-xs text-slate-400 flex-wrap mb-4">
-                  <span className="text-slate-500">Presets:</span>
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 flex-wrap mb-4">
+                  <span>Presets:</span>
                   {['{[()()]}', '{[(])}', '((()))', '({[]})', '(()', '{[}'].map((preset) => (
                     <button
                       key={preset}
                       onClick={() => resetParenTrace(preset)}
                       className={`px-2 py-0.5 rounded text-xs font-mono transition-colors ${
-                        parenInput === preset ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                        parenInput === preset 
+                          ? isDark ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold'
+                          : isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                       }`}
                     >
                       {preset}
@@ -236,7 +262,9 @@ export function RealWorldSimulators() {
                 </div>
 
                 {/* Token Stream with Visual Pointer */}
-                <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div className={`p-4 rounded-xl border ${
+                  isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div className="text-[11px] font-mono text-slate-500 mb-2">Token Scan Stream:</div>
                   <div className="flex items-center gap-2 overflow-x-auto pb-2">
                     {parenInput.split('').map((ch, idx) => {
@@ -250,8 +278,8 @@ export function RealWorldSimulators() {
                               isCurrent
                                 ? 'bg-emerald-500 text-slate-950 ring-2 ring-emerald-400 ring-offset-2 ring-offset-slate-900 scale-110'
                                 : isProcessed
-                                ? 'bg-slate-800 text-slate-400 line-through opacity-60'
-                                : 'bg-slate-950 text-white border border-slate-800'
+                                ? isDark ? 'bg-slate-800 text-slate-500 line-through opacity-60' : 'bg-slate-200 text-slate-400 line-through'
+                                : isDark ? 'bg-slate-950 text-white border border-slate-800' : 'bg-white text-slate-900 border border-slate-300 shadow-sm'
                             }`}
                           >
                             {ch}
@@ -270,18 +298,18 @@ export function RealWorldSimulators() {
               <div
                 className={`p-3.5 rounded-xl border text-xs leading-relaxed flex items-start gap-2.5 ${
                   parenStatus.status === 'valid'
-                    ? 'bg-emerald-950/40 border-emerald-600 text-emerald-200'
+                    ? isDark ? 'bg-emerald-950/40 border-emerald-600 text-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-900'
                     : parenStatus.status === 'invalid'
-                    ? 'bg-rose-950/40 border-rose-600 text-rose-200'
-                    : 'bg-slate-900 border-slate-800 text-slate-300'
+                    ? isDark ? 'bg-rose-950/40 border-rose-600 text-rose-200' : 'bg-rose-50 border-rose-300 text-rose-900'
+                    : isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
                 }`}
               >
                 {parenStatus.status === 'valid' ? (
-                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 ) : parenStatus.status === 'invalid' ? (
-                  <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                 ) : (
-                  <Terminal className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <Terminal className="w-4 h-4 text-cyan-500 shrink-0 mt-0.5" />
                 )}
                 <div>{parenStatus.msg}</div>
               </div>
@@ -310,7 +338,9 @@ export function RealWorldSimulators() {
                       });
                     }, 400);
                   }}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-medium"
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium ${
+                    isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  }`}
                 >
                   <Play className="w-4 h-4" />
                   <span>Auto-Trace</span>
@@ -319,17 +349,23 @@ export function RealWorldSimulators() {
             </div>
 
             {/* Right: Live Bracket Stack */}
-            <div className="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center">
-              <h4 className="text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">
+            <div className={`lg:col-span-5 border rounded-2xl p-6 flex flex-col items-center transition-colors ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
+                isDark ? 'text-slate-300' : 'text-slate-700'
+              }`}>
                 Bracket Stack State
               </h4>
               <div className="text-[11px] text-slate-500 mb-4 font-mono">
                 {"Pushes '(', '{', '[' · Pops on matching ')', '}', ']'"}
               </div>
 
-              <div className="w-full max-w-[240px] min-h-[220px] bg-slate-900/90 border-x-4 border-b-4 border-slate-700 rounded-b-xl flex flex-col-reverse p-3 gap-2">
+              <div className={`w-full max-w-[240px] min-h-[220px] border-x-4 border-b-4 rounded-b-xl flex flex-col-reverse p-3 gap-2 ${
+                isDark ? 'bg-slate-900/90 border-slate-700' : 'bg-slate-100 border-slate-300'
+              }`}>
                 {parenStack.length === 0 ? (
-                  <div className="flex-1 flex items-center justify-center text-[11px] text-slate-600 font-mono">
+                  <div className="flex-1 flex items-center justify-center text-[11px] text-slate-500 font-mono">
                     [ Stack Empty ]
                   </div>
                 ) : (
@@ -338,11 +374,15 @@ export function RealWorldSimulators() {
                       key={idx}
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      className="h-10 bg-emerald-500/20 border-2 border-emerald-400/80 rounded-lg flex items-center justify-between px-3 text-emerald-300 font-mono font-bold"
+                      className={`h-10 rounded-lg border-2 flex items-center justify-between px-3 font-mono font-bold ${
+                        isDark 
+                          ? 'bg-emerald-500/20 border-emerald-400/80 text-emerald-300' 
+                          : 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-sm'
+                      }`}
                     >
-                      <span className="text-[10px] text-slate-400">[{idx}]</span>
+                      <span className="text-[10px] text-slate-500">[{idx}]</span>
                       <span className="text-lg">{bracket}</span>
-                      <span className="text-[10px] text-emerald-400">
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
                         {idx === parenStack.length - 1 ? 'TOP' : ''}
                       </span>
                     </motion.div>
@@ -359,18 +399,30 @@ export function RealWorldSimulators() {
         {/* --- TAB 2: UNDO / REDO --- */}
         {activeTab === 'undoredo' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-6 bg-slate-950 border border-slate-800 rounded-2xl p-6">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                <h3 className="text-sm font-semibold text-white">Document Editor State</h3>
-                <span className="text-xs font-mono text-cyan-400">Dual-Stack Memento</span>
+            <div className={`lg:col-span-6 border rounded-2xl p-6 transition-colors ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <div className={`flex items-center justify-between pb-3 border-b mb-4 ${
+                isDark ? 'border-slate-800' : 'border-slate-200'
+              }`}>
+                <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Document Editor State
+                </h3>
+                <span className={`text-xs font-mono ${isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'}`}>
+                  Dual-Stack Memento
+                </span>
               </div>
 
               {/* Editor Workspace */}
-              <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 min-h-[120px] mb-4">
+              <div className={`p-4 rounded-xl border min-h-[120px] mb-4 ${
+                isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div className="text-[10px] font-mono text-slate-500 mb-1">Canvas / Buffer:</div>
-                <div className="text-lg font-mono text-white min-h-[30px] border-b border-slate-800 pb-2">
-                  {editorText || <span className="text-slate-600 italic">Empty document...</span>}
-                  <span className="inline-block w-2 h-5 bg-cyan-400 ml-1 animate-pulse" />
+                <div className={`text-lg font-mono min-h-[30px] border-b pb-2 ${
+                  isDark ? 'border-slate-800 text-white' : 'border-slate-200 text-slate-900'
+                }`}>
+                  {editorText || <span className="text-slate-400 italic">Empty document...</span>}
+                  <span className="inline-block w-2 h-5 bg-cyan-500 ml-1 animate-pulse" />
                 </div>
               </div>
 
@@ -384,11 +436,13 @@ export function RealWorldSimulators() {
                     if (e.key === 'Enter') handleTypeWord(nextWord);
                   }}
                   placeholder="Type word to append..."
-                  className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-sm text-white"
+                  className={`flex-1 border rounded-lg px-3 py-1.5 text-sm ${
+                    isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
+                  }`}
                 />
                 <button
                   onClick={() => handleTypeWord(nextWord)}
-                  className="px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-lg text-xs font-semibold"
+                  className="px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-lg text-xs font-semibold shadow-sm"
                 >
                   Type
                 </button>
@@ -399,26 +453,30 @@ export function RealWorldSimulators() {
                 <button
                   onClick={handleUndo}
                   disabled={undoStack.length <= 1}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all border ${
                     undoStack.length <= 1
-                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                      : 'bg-slate-800 hover:bg-slate-700 text-white active:scale-95'
+                      ? 'opacity-40 cursor-not-allowed border-transparent'
+                      : isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700 active:scale-95'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm active:scale-95'
                   }`}
                 >
-                  <Undo2 className="w-4 h-4 text-emerald-400" />
+                  <Undo2 className="w-4 h-4 text-emerald-500" />
                   <span>Undo (Pop Undo Stack)</span>
                 </button>
 
                 <button
                   onClick={handleRedo}
                   disabled={redoStack.length === 0}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all border ${
                     redoStack.length === 0
-                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                      : 'bg-slate-800 hover:bg-slate-700 text-white active:scale-95'
+                      ? 'opacity-40 cursor-not-allowed border-transparent'
+                      : isDark
+                      ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700 active:scale-95'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200 shadow-sm active:scale-95'
                   }`}
                 >
-                  <Redo2 className="w-4 h-4 text-cyan-400" />
+                  <Redo2 className="w-4 h-4 text-cyan-500" />
                   <span>Redo (Pop Redo Stack)</span>
                 </button>
               </div>
@@ -427,15 +485,23 @@ export function RealWorldSimulators() {
             {/* Dual Stacks Display */}
             <div className="lg:col-span-6 grid grid-cols-2 gap-4">
               {/* Undo Stack */}
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center">
-                <div className="text-xs font-semibold text-emerald-400 mb-1">Undo Stack</div>
+              <div className={`border rounded-2xl p-4 flex flex-col items-center transition-colors ${
+                isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+              }`}>
+                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700 font-bold'}`}>Undo Stack</div>
                 <div className="text-[10px] text-slate-500 mb-3">{undoStack.length} snapshots</div>
 
-                <div className="w-full min-h-[200px] bg-slate-900 border-x-2 border-b-2 border-slate-700 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden">
+                <div className={`w-full min-h-[200px] border-x-2 border-b-2 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden ${
+                  isDark ? 'bg-slate-900 border-slate-700' : 'bg-slate-100 border-slate-300'
+                }`}>
                   {undoStack.slice(-5).map((snap, idx) => (
                     <div
                       key={idx}
-                      className="px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/40 text-[11px] font-mono text-emerald-200 truncate text-center"
+                      className={`px-2 py-1 rounded border text-[11px] font-mono truncate text-center ${
+                        isDark 
+                          ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200' 
+                          : 'bg-emerald-100 border-emerald-300 text-emerald-950'
+                      }`}
                     >
                       {`"${snap || '<empty>'}"`}
                     </div>
@@ -445,20 +511,28 @@ export function RealWorldSimulators() {
               </div>
 
               {/* Redo Stack */}
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center">
-                <div className="text-xs font-semibold text-cyan-400 mb-1">Redo Stack</div>
+              <div className={`border rounded-2xl p-4 flex flex-col items-center transition-colors ${
+                isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+              }`}>
+                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-700 font-bold'}`}>Redo Stack</div>
                 <div className="text-[10px] text-slate-500 mb-3">{redoStack.length} snapshots</div>
 
-                <div className="w-full min-h-[200px] bg-slate-900 border-x-2 border-b-2 border-slate-700 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden">
+                <div className={`w-full min-h-[200px] border-x-2 border-b-2 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden ${
+                  isDark ? 'bg-slate-900 border-slate-700' : 'bg-slate-100 border-slate-300'
+                }`}>
                   {redoStack.length === 0 ? (
-                    <div className="flex-1 flex items-center justify-center text-[10px] text-slate-600 font-mono">
+                    <div className="flex-1 flex items-center justify-center text-[10px] text-slate-400 font-mono">
                       Empty
                     </div>
                   ) : (
                     redoStack.slice(-5).map((snap, idx) => (
                       <div
                         key={idx}
-                        className="px-2 py-1 rounded bg-cyan-500/20 border border-cyan-500/40 text-[11px] font-mono text-cyan-200 truncate text-center"
+                        className={`px-2 py-1 rounded border text-[11px] font-mono truncate text-center ${
+                          isDark 
+                            ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200' 
+                            : 'bg-cyan-100 border-cyan-300 text-cyan-950'
+                        }`}
                       >
                         {`"${snap}"`}
                       </div>
@@ -474,34 +548,56 @@ export function RealWorldSimulators() {
         {/* --- TAB 3: CPU CALL STACK --- */}
         {activeTab === 'callstack' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-7 bg-slate-950 border border-slate-800 rounded-2xl p-6">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-violet-400" />
+            <div className={`lg:col-span-7 border rounded-2xl p-6 transition-colors ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <div className={`flex items-center justify-between pb-3 border-b mb-4 ${
+                isDark ? 'border-slate-800' : 'border-slate-200'
+              }`}>
+                <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                  isDark ? 'text-white' : 'text-slate-900'
+                }`}>
+                  <Cpu className="w-4 h-4 text-violet-500" />
                   <span>Call Stack Execution: factorial(4)</span>
                 </h3>
-                <span className="text-xs font-mono text-violet-400">Step {recursionStep + 1} / {recursionTimeline.length}</span>
+                <span className={`text-xs font-mono ${isDark ? 'text-violet-400' : 'text-violet-700 font-semibold'}`}>
+                  Step {recursionStep + 1} / {recursionTimeline.length}
+                </span>
               </div>
 
               {/* Python Function Code */}
-              <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 mb-4 leading-relaxed">
+              <div className={`p-4 rounded-xl border font-mono text-xs mb-4 leading-relaxed ${
+                isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-800'
+              }`}>
                 <div className="text-slate-500"># Recursive implementation</div>
-                <div><span className="text-violet-400">def</span> <span className="text-emerald-400">factorial</span>(n):</div>
+                <div><span className="text-violet-600 dark:text-violet-400 font-semibold">def</span> <span className="text-emerald-600 dark:text-emerald-400 font-semibold">factorial</span>(n):</div>
                 <div className="pl-4">if n &lt;= 1:</div>
-                <div className="pl-8 text-cyan-400">return 1  # Base case</div>
-                <div className="pl-4 text-emerald-300">return n * factorial(n - 1)  # Recursive call</div>
+                <div className="pl-8 text-cyan-600 dark:text-cyan-400 font-medium">return 1  # Base case</div>
+                <div className="pl-4 text-emerald-600 dark:text-emerald-300 font-medium">return n * factorial(n - 1)  # Recursive call</div>
               </div>
 
               {/* Current Event Description */}
-              <div className="p-4 rounded-xl bg-violet-950/30 border border-violet-800/50 mb-6">
-                <div className="text-xs font-semibold text-violet-300 mb-1">
+              <div className={`p-4 rounded-xl border mb-6 ${
+                isDark 
+                  ? 'bg-violet-950/30 border-violet-800/50' 
+                  : 'bg-violet-50 border-violet-200'
+              }`}>
+                <div className={`text-xs font-semibold mb-1 ${
+                  isDark ? 'text-violet-300' : 'text-violet-900'
+                }`}>
                   Active Frame: {currentRec.frame}
                 </div>
-                <div className="text-xs text-slate-300 leading-normal">
+                <div className={`text-xs leading-normal ${
+                  isDark ? 'text-slate-300' : 'text-slate-700'
+                }`}>
                   {currentRec.action}
                 </div>
                 {currentRec.val && (
-                  <div className="mt-2 text-xs font-mono text-emerald-400 bg-slate-950/80 p-2 rounded border border-slate-800">
+                  <div className={`mt-2 text-xs font-mono p-2 rounded border ${
+                    isDark 
+                      ? 'text-emerald-400 bg-slate-950/80 border-slate-800' 
+                      : 'text-emerald-800 bg-white border-slate-200 font-semibold shadow-sm'
+                  }`}>
                     Yield Value: {currentRec.val}
                   </div>
                 )}
@@ -512,20 +608,24 @@ export function RealWorldSimulators() {
                 <button
                   onClick={() => setRecursionStep((prev) => Math.max(0, prev - 1))}
                   disabled={recursionStep === 0}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 rounded-lg text-xs font-medium"
+                  className={`px-4 py-2 rounded-lg text-xs font-medium border ${
+                    recursionStep === 0 ? 'opacity-40 cursor-not-allowed' : ''
+                  } ${
+                    isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 shadow-sm'
+                  }`}
                 >
                   Step Back
                 </button>
                 <button
                   onClick={() => setRecursionStep((prev) => Math.min(recursionTimeline.length - 1, prev + 1))}
                   disabled={recursionStep === recursionTimeline.length - 1}
-                  className="px-4 py-2 bg-violet-500 hover:bg-violet-400 disabled:opacity-40 text-slate-950 rounded-lg text-xs font-semibold shadow-md"
+                  className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold shadow-md active:scale-95 disabled:opacity-40"
                 >
                   Step Forward
                 </button>
                 <button
                   onClick={() => setRecursionStep(0)}
-                  className="px-3 py-2 text-xs text-slate-400 hover:text-white"
+                  className={`px-3 py-2 text-xs ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   Reset
                 </button>
@@ -533,15 +633,21 @@ export function RealWorldSimulators() {
             </div>
 
             {/* Right: The Physical Call Stack Frames */}
-            <div className="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-6 flex flex-col items-center">
-              <h4 className="text-xs font-semibold text-slate-300 mb-1 uppercase tracking-wider">
+            <div className={`lg:col-span-5 border rounded-2xl p-6 flex flex-col items-center transition-colors ${
+              isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
+            }`}>
+              <h4 className={`text-xs font-semibold mb-1 uppercase tracking-wider ${
+                isDark ? 'text-slate-300' : 'text-slate-700'
+              }`}>
                 System Call Stack (RAM)
               </h4>
               <p className="text-[11px] text-slate-500 mb-4 text-center">
                 Stack grows upward in memory. Top frame holds CPU execution pointer (PC).
               </p>
 
-              <div className="w-full max-w-[280px] min-h-[260px] bg-slate-900 border-x-4 border-b-4 border-slate-700 rounded-b-xl flex flex-col-reverse p-3 gap-2">
+              <div className={`w-full max-w-[280px] min-h-[260px] border-x-4 border-b-4 rounded-b-xl flex flex-col-reverse p-3 gap-2 ${
+                isDark ? 'bg-slate-900 border-slate-700' : 'bg-slate-100 border-slate-300'
+              }`}>
                 {currentRec.stack.map((frameName, idx) => {
                   const isTop = idx === currentRec.stack.length - 1;
                   return (
@@ -552,13 +658,21 @@ export function RealWorldSimulators() {
                       animate={{ opacity: 1, y: 0 }}
                       className={`h-11 rounded-lg border-2 flex items-center justify-between px-3 font-mono text-xs ${
                         isTop
-                          ? 'bg-violet-500/20 border-violet-400 text-violet-200 shadow-md ring-2 ring-violet-500/30'
-                          : 'bg-slate-800/80 border-slate-700 text-slate-400'
+                          ? isDark
+                            ? 'bg-violet-500/20 border-violet-400 text-violet-200 shadow-md ring-2 ring-violet-500/30'
+                            : 'bg-violet-100 border-violet-400 text-violet-950 shadow-sm ring-2 ring-violet-400/40'
+                          : isDark
+                          ? 'bg-slate-800/80 border-slate-700 text-slate-400'
+                          : 'bg-white border-slate-200 text-slate-600 shadow-sm'
                       }`}
                     >
-                      <span>{frameName}</span>
+                      <span className="font-semibold">{frameName}</span>
                       {isTop && (
-                        <span className="text-[10px] bg-violet-950 text-violet-300 border border-violet-700 px-1 rounded">
+                        <span className={`text-[10px] px-1 rounded border font-semibold ${
+                          isDark 
+                            ? 'bg-violet-950 text-violet-300 border-violet-700' 
+                            : 'bg-violet-200 text-violet-800 border-violet-300'
+                        }`}>
                           ACTIVE (RSP)
                         </span>
                       )}

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { StackVisualizer } from '@/components/Visualizer/StackVisualizer';
@@ -11,7 +12,8 @@ import { StepByStepDocs } from '@/components/Documentation/StepByStepDocs';
 import { ExercisesSection } from '@/components/Exercises/ExercisesSection';
 import { Footer } from '@/components/Footer';
 
-export default function HomePage() {
+function MainApp() {
+  const { isDark } = useTheme();
   const [activeSection, setActiveSection] = useState<string>('visualizer');
 
   const scrollToSection = (sectionId: string) => {
@@ -45,8 +47,10 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-      {/* 3-Zone Top Bar Navigation */}
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-200 selection:bg-emerald-500/30 selection:text-emerald-300 ${
+      isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
+      {/* 3-Zone Top Bar Navigation with Theme Switcher */}
       <Navbar activeSection={activeSection} onNavigate={scrollToSection} />
 
       {/* Main Content Area */}
@@ -76,5 +80,13 @@ export default function HomePage() {
       {/* Footer */}
       <Footer />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <ThemeProvider>
+      <MainApp />
+    </ThemeProvider>
   );
 }
