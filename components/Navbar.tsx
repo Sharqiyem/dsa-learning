@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Menu, X, Play, Layers, Sun, Moon } from 'lucide-react';
+import { Menu, X, Play, Layers, Sun, Moon, Globe } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface NavbarProps {
   activeSection: string;
@@ -11,15 +12,16 @@ interface NavbarProps {
 
 export function Navbar({ activeSection, onNavigate }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, toggleTheme, isDark } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t, isRTL } = useLanguage();
 
   const navLinks = [
-    { id: 'visualizer', label: 'Visualizer' },
-    { id: 'operations', label: 'Operations' },
-    { id: 'python-code', label: 'Python Code' },
-    { id: 'applications', label: 'Real-World Apps' },
-    { id: 'documentation', label: 'Documentation' },
-    { id: 'exercises', label: 'Exercises' },
+    { id: 'visualizer', label: t.nav.visualizer },
+    { id: 'operations', label: t.nav.operations },
+    { id: 'python-code', label: t.nav.pythonCode },
+    { id: 'applications', label: t.nav.applications },
+    { id: 'documentation', label: t.nav.documentation },
+    { id: 'exercises', label: t.nav.exercises },
   ];
 
   const handleLinkClick = (id: string) => {
@@ -50,7 +52,7 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
         </a>
 
         {/* Zone 2: 4-6 clean text navigation links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-5 text-sm font-medium">
           {navLinks.map((link) => (
             <button
               key={link.id}
@@ -66,12 +68,26 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
           ))}
         </nav>
 
-        {/* Zone 3: 1-2 primary actions + Theme Toggle */}
-        <div className="flex items-center gap-2.5">
+        {/* Zone 3: Actions (Language Switcher, Theme Toggle, Launch Button) */}
+        <div className="flex items-center gap-2">
+          {/* Language Toggle Button */}
+          <button
+            onClick={toggleLanguage}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${
+              isDark
+                ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-emerald-400'
+                : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200 hover:text-emerald-700'
+            }`}
+            title={language === 'en' ? 'التحويل إلى اللغة العربية' : 'Switch to English'}
+          >
+            <Globe className="w-3.5 h-3.5 text-emerald-500" />
+            <span>{language === 'en' ? 'عربي' : 'EN'}</span>
+          </button>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={t.nav.toggleTheme}
             className={`p-2 rounded-lg border transition-colors ${
               isDark
                 ? 'bg-slate-900 border-slate-800 text-amber-300 hover:bg-slate-800 hover:text-amber-200'
@@ -84,10 +100,10 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
 
           <button
             onClick={() => handleLinkClick('visualizer')}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 rounded-md hover:bg-emerald-300 transition-colors whitespace-nowrap shadow-sm shadow-emerald-500/20"
+            className="hidden lg:inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-950 bg-emerald-400 rounded-md hover:bg-emerald-300 transition-colors whitespace-nowrap shadow-sm shadow-emerald-500/20"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>Interactive Simulator</span>
+            <span>{t.nav.simulatorBtn}</span>
           </button>
 
           {/* Mobile hamburger toggle */}
@@ -128,7 +144,7 @@ export function Navbar({ activeSection, onNavigate }: NavbarProps) {
               className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-950 bg-emerald-400 rounded-md hover:bg-emerald-300 transition-colors"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Launch Simulator</span>
+              <span>{t.nav.simulatorBtn}</span>
             </button>
           </div>
         </div>

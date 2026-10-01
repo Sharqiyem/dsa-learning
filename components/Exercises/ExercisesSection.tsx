@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
-import { EXERCISES_DATA } from '@/data/exercisesData';
+import { EXERCISES_DATA, EXERCISES_DATA_AR } from '@/data/exercisesData';
 import { 
   HelpCircle, 
   ChevronDown, 
@@ -13,19 +13,32 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function ExercisesSection() {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
+  const exercisesList = isArabic ? EXERCISES_DATA_AR : EXERCISES_DATA;
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [revealedSolutions, setRevealedSolutions] = useState<Record<string, boolean>>({});
   const [userSelectedOptions, setUserSelectedOptions] = useState<Record<string, number>>({});
   const [completedExercises, setCompletedExercises] = useState<Record<string, boolean>>({});
 
-  const categories = ['All', 'Fundamentals', 'Operation Tracing', 'Code Output', 'Real-World Apps', 'Algorithms'];
+  const categories = [
+    { id: 'All', label: isArabic ? 'الكل' : 'All' },
+    { id: 'Fundamentals', label: isArabic ? 'المفاهيم الأساسية' : 'Fundamentals' },
+    { id: 'Operation Tracing', label: isArabic ? 'تتبع العمليات' : 'Operation Tracing' },
+    { id: 'Code Output', label: isArabic ? 'ناتج الأكواد' : 'Code Output' },
+    { id: 'Real-World Apps', label: isArabic ? 'تطبيقات برمجية' : 'Real-World Apps' },
+    { id: 'Algorithms', label: isArabic ? 'الخوارزميات' : 'Algorithms' },
+  ];
 
   const filteredExercises = selectedCategory === 'All'
-    ? EXERCISES_DATA
-    : EXERCISES_DATA.filter((ex) => ex.category === selectedCategory);
+    ? exercisesList
+    : exercisesList.filter((ex) => ex.category === selectedCategory);
 
   const toggleSolution = (id: string) => {
     setRevealedSolutions((prev) => ({
@@ -46,7 +59,7 @@ export function ExercisesSection() {
         setCompletedExercises(nextCompleted);
 
         const completedCount = Object.keys(nextCompleted).filter((k) => nextCompleted[k]).length;
-        if (completedCount === EXERCISES_DATA.length) {
+        if (completedCount === exercisesList.length) {
           try {
             confetti({
               particleCount: 100,
@@ -63,7 +76,7 @@ export function ExercisesSection() {
     setCompletedExercises((prev) => {
       const next = { ...prev, [id]: !prev[id] };
       const completedCount = Object.keys(next).filter((k) => next[k]).length;
-      if (completedCount === EXERCISES_DATA.length && next[id]) {
+      if (completedCount === exercisesList.length && next[id]) {
         try {
           confetti({
             particleCount: 100,
@@ -76,7 +89,7 @@ export function ExercisesSection() {
     });
   };
 
-  const totalExercises = EXERCISES_DATA.length;
+  const totalExercises = exercisesList.length;
   const completedCount = Object.keys(completedExercises).filter((k) => completedExercises[k]).length;
   const progressPercent = Math.round((completedCount / totalExercises) * 100);
 
@@ -91,17 +104,15 @@ export function ExercisesSection() {
             <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
               isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
             }`}>
-              <span>TEST YOUR UNDERSTANDING</span>
-              <span aria-hidden="true">·</span>
-              <span>12 COMPREHENSIVE DRILLS</span>
+              <span>{t.exercises.badge}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
-              Interactive Stack Exercises & Quizzes
+              {t.exercises.title}
             </h2>
             <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Solutions and step-by-step logic traces are <strong className={isDark ? 'text-white' : 'text-slate-900'}>hidden by default</strong> so you can practice solving them independently before inspecting answers.
+              {t.exercises.subtitle}
             </p>
           </div>
 
@@ -112,7 +123,7 @@ export function ExercisesSection() {
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className={`font-medium flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 <Trophy className="w-3.5 h-3.5 text-amber-500" />
-                <span>Mastery Progress</span>
+                <span>{t.exercises.masteryProgress}</span>
               </span>
               <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                 {completedCount} / {totalExercises} ({progressPercent}%)
@@ -127,7 +138,7 @@ export function ExercisesSection() {
             {progressPercent === 100 && (
               <div className="text-[11px] text-amber-600 dark:text-amber-300 font-medium mt-2 flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>All 12 exercises mastered! Outstanding work.</span>
+                <span>{t.exercises.allMastered}</span>
               </div>
             )}
           </div>
@@ -137,17 +148,17 @@ export function ExercisesSection() {
         <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8">
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap border ${
-                selectedCategory === cat
+                selectedCategory === cat.id
                   ? 'bg-emerald-500 text-slate-950 border-emerald-500 font-semibold shadow-sm'
                   : isDark
                   ? 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
                   : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -262,7 +273,7 @@ export function ExercisesSection() {
                             }`}>
                               {String.fromCharCode(65 + optIdx)}
                             </span>
-                            <span>{opt}</span>
+                            <span dir="ltr">{opt}</span>
                           </div>
 
                           {isAnswered && isOptionSelected && (
@@ -290,9 +301,7 @@ export function ExercisesSection() {
                     }`}
                   >
                     <span>
-                      {isCorrect
-                        ? 'Correct! Excellent comprehension.'
-                        : 'Not quite right. Click "Show Solution" below to inspect the step-by-step logic.'}
+                      {isCorrect ? t.exercises.correctMsg : t.exercises.incorrectMsg}
                     </span>
                     {!isCorrect && (
                       <button
@@ -305,7 +314,7 @@ export function ExercisesSection() {
                         }}
                         className="text-[11px] underline ml-2 hover:opacity-80"
                       >
-                        Try Again
+                        {t.exercises.tryAgainBtn}
                       </button>
                     )}
                   </div>
@@ -322,7 +331,7 @@ export function ExercisesSection() {
                     }`}
                   >
                     {isRevealed ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    <span>{isRevealed ? 'Hide Solution' : 'Show Solution & Reasoning (Answer Hidden)'}</span>
+                    <span>{isRevealed ? t.exercises.hideSolutionBtn : t.exercises.showSolutionBtn}</span>
                   </button>
 
                   <button
@@ -333,7 +342,7 @@ export function ExercisesSection() {
                         : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                     }`}
                   >
-                    {isDone ? 'Marked as Mastered ✓' : 'Mark as Done'}
+                    {isDone ? t.exercises.markedMasteredBtn : t.exercises.markDoneBtn}
                   </button>
                 </div>
 
@@ -344,7 +353,7 @@ export function ExercisesSection() {
                   }`}>
                     <div className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
                       <HelpCircle className="w-3.5 h-3.5" />
-                      <span>Detailed Step-by-Step Solution</span>
+                      <span>{t.exercises.stepByStepTitle}</span>
                     </div>
 
                     <div className={`text-xs leading-relaxed whitespace-pre-line mb-3 font-mono ${
@@ -356,7 +365,7 @@ export function ExercisesSection() {
                     <div className={`p-3 rounded-lg border text-xs ${
                       isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700 shadow-sm'
                     }`}>
-                      <strong className="text-cyan-600 dark:text-cyan-400">Key Takeaway: </strong>
+                      <strong className="text-cyan-600 dark:text-cyan-400">{t.exercises.keyTakeawayTitle}</strong>
                       {exercise.keyTakeaway}
                     </div>
                   </div>

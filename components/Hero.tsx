@@ -3,6 +3,7 @@
 import React from 'react';
 import { Code2, BookOpen, Layers } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface HeroProps {
   onExplore: (sectionId: string) => void;
@@ -10,6 +11,7 @@ interface HeroProps {
 
 export function Hero({ onExplore }: HeroProps) {
   const { isDark } = useTheme();
+  const { t, isRTL } = useLanguage();
 
   return (
     <section className={`relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 border-b transition-colors ${
@@ -32,30 +34,24 @@ export function Hero({ onExplore }: HeroProps) {
         <div className={`flex items-center gap-2 text-xs font-mono mb-4 tracking-wide ${
           isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
         }`}>
-          <span>DATA STRUCTURES & ALGORITHMS</span>
-          <span aria-hidden="true">·</span>
-          <span>W3SCHOOLS CURRICULUM</span>
-          <span aria-hidden="true">·</span>
-          <span>PYTHON IMPLEMENTATION</span>
+          <span>{t.hero.categoryBadge}</span>
         </div>
 
         {/* Main Display Headline with text-wrap: balance */}
         <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight max-w-4xl text-balance leading-tight ${
           isDark ? 'text-white' : 'text-slate-950'
         }`}>
-          Master the Stack: Understanding{' '}
+          {t.hero.headlinePart1}{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
-            LIFO
+            {t.hero.headlineHighlight}
           </span>{' '}
-          Through Interactive Animation
+          {t.hero.headlinePart2}
         </h1>
 
         <p className={`mt-5 text-base sm:text-lg max-w-2xl leading-relaxed ${
           isDark ? 'text-slate-300' : 'text-slate-600'
         }`}>
-          Step inside a spring-loaded data container. Experiment with animated{' '}
-          <strong className={isDark ? 'text-white' : 'text-slate-900'}>push</strong> and{' '}
-          <strong className={isDark ? 'text-white' : 'text-slate-900'}>pop</strong> transitions, inspect Python data structure mechanics line by line, evaluate call stacks, and test your skills with hidden-answer exercises.
+          {t.hero.subtitle}
         </p>
 
         {/* Action CTAs */}
@@ -65,7 +61,7 @@ export function Hero({ onExplore }: HeroProps) {
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-all shadow-md shadow-emerald-500/25 active:scale-95"
           >
             <Layers className="w-4 h-4" />
-            <span>Open Interactive Stack</span>
+            <span>{t.hero.openStackBtn}</span>
           </button>
           <button
             onClick={() => onExplore('python-code')}
@@ -76,7 +72,7 @@ export function Hero({ onExplore }: HeroProps) {
             }`}
           >
             <Code2 className="w-4 h-4 text-emerald-500" />
-            <span>View Python Code & Logic</span>
+            <span>{t.hero.viewCodeBtn}</span>
           </button>
           <button
             onClick={() => onExplore('exercises')}
@@ -87,7 +83,7 @@ export function Hero({ onExplore }: HeroProps) {
             }`}
           >
             <BookOpen className="w-4 h-4 text-cyan-500" />
-            <span>Practice 12+ Exercises</span>
+            <span>{t.hero.practiceBtn}</span>
           </button>
         </div>
 
@@ -102,10 +98,10 @@ export function Hero({ onExplore }: HeroProps) {
               isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
             }`}>Principle 01</div>
             <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Last-In, First-Out (LIFO)
+              {t.hero.card1Title}
             </h3>
             <p className={`text-xs leading-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Just like a stack of cafeteria dinner plates, you can only insert or remove items at the top. The first plate placed on the table is the last one picked up.
+              {t.hero.card1Desc}
             </p>
           </div>
 
@@ -118,10 +114,10 @@ export function Hero({ onExplore }: HeroProps) {
               isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'
             }`}>Principle 02</div>
             <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Strict O(1) Constant Time
+              {t.hero.card2Title}
             </h3>
             <p className={`text-xs leading-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Because all mutations are restricted to the head boundary (index -1), <code className={isDark ? 'text-emerald-300' : 'text-emerald-700 font-semibold'}>push()</code>, <code className={isDark ? 'text-emerald-300' : 'text-emerald-700 font-semibold'}>pop()</code>, and <code className={isDark ? 'text-emerald-300' : 'text-emerald-700 font-semibold'}>peek()</code> execute without element re-indexing.
+              {t.hero.card2Desc}
             </p>
           </div>
 
@@ -134,10 +130,10 @@ export function Hero({ onExplore }: HeroProps) {
               isDark ? 'text-amber-400' : 'text-amber-700 font-semibold'
             }`}>Principle 03</div>
             <h3 className={`text-base font-semibold mb-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              Hardware & Compiler Foundation
+              {t.hero.card3Title}
             </h3>
             <p className={`text-xs leading-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              CPU call stacks, syntax bracket balancing, text editor undo history, and browser backward navigation are all powered by this data structure.
+              {t.hero.card3Desc}
             </p>
           </div>
         </div>

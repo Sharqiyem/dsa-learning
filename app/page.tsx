@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { StackVisualizer } from '@/components/Visualizer/StackVisualizer';
@@ -50,7 +51,7 @@ function MainApp() {
     <div className={`min-h-screen flex flex-col font-sans transition-colors duration-200 selection:bg-emerald-500/30 selection:text-emerald-300 ${
       isDark ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
     }`}>
-      {/* 3-Zone Top Bar Navigation with Theme Switcher */}
+      {/* 3-Zone Top Bar Navigation with Language & Theme Switchers */}
       <Navbar activeSection={activeSection} onNavigate={scrollToSection} />
 
       {/* Main Content Area */}
@@ -86,7 +87,9 @@ function MainApp() {
 export default function HomePage() {
   return (
     <ThemeProvider>
-      <MainApp />
+      <LanguageProvider>
+        <MainApp />
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

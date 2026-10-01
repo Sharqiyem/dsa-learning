@@ -15,9 +15,13 @@ import {
   FileCode2
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function PythonCodeExplorer() {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const [selectedImplId, setSelectedImplId] = useState<string>('list-stack');
   const [selectedLineNum, setSelectedLineNum] = useState<number>(2);
   const [copied, setCopied] = useState<boolean>(false);
@@ -54,17 +58,15 @@ export function PythonCodeExplorer() {
             <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
               isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
             }`}>
-              <span>PYTHON ARCHITECTURE & LOGIC</span>
-              <span aria-hidden="true">·</span>
-              <span>LINE-BY-LINE EXPLAINER</span>
+              <span>{t.python.badge}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
-              Underlying Data Structure & Python Code
+              {t.python.title}
             </h2>
             <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              Click any line of code to reveal how Python manages memory buffers, pointer pointers, exception contracts, and dynamic array resizing under the hood.
+              {t.python.subtitle}
             </p>
           </div>
 
@@ -79,14 +81,14 @@ export function PythonCodeExplorer() {
               }`}
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Code Copied!' : 'Copy Implementation'}</span>
+              <span>{copied ? t.python.copiedBtn : t.python.copyBtn}</span>
             </button>
             <button
               onClick={handleDownloadPy}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-semibold transition-colors shadow-sm active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download stack_mastery.py</span>
+              <span>{t.python.downloadBtn}</span>
             </button>
           </div>
         </div>
@@ -122,10 +124,10 @@ export function PythonCodeExplorer() {
 
         {/* Split Screen: Code Viewer (7 Cols) + Line Explainer (5 Cols) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left: Code Viewer with Clickable Lines */}
+          {/* Left: Code Viewer with Clickable Lines (Kept LTR for pristine Python syntax) */}
           <div className={`lg:col-span-7 border rounded-2xl overflow-hidden shadow-lg ${
             isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-950 border-slate-800'
-          }`}>
+          }`} dir="ltr">
             {/* Window Topbar */}
             <div className="px-4 py-3 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -138,7 +140,7 @@ export function PythonCodeExplorer() {
                 </span>
               </div>
               <span className="text-[11px] font-mono text-slate-500">
-                Click any line to inspect
+                {t.python.clickLineTip}
               </span>
             </div>
 
@@ -189,7 +191,7 @@ export function PythonCodeExplorer() {
                       )}
                     </span>
 
-                    {/* Indicator Pill for documented lines */}
+                    {/* Indicator for documented lines */}
                     {lineExplanation && (
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
                         <ChevronRight className="w-3.5 h-3.5 text-emerald-400" />
@@ -219,7 +221,7 @@ export function PythonCodeExplorer() {
                     }`}>
                       Line {selectedLineObj.lineNum}
                     </span>
-                    <span className="text-xs text-slate-500 font-mono">Syntax Inspector</span>
+                    <span className="text-xs text-slate-500 font-mono">{t.python.syntaxInspector}</span>
                   </div>
                   <span className={`text-[11px] font-mono px-2 py-0.5 rounded border ${
                     isDark 
@@ -235,7 +237,7 @@ export function PythonCodeExplorer() {
                   isDark 
                     ? 'bg-slate-950 border-slate-800 text-emerald-300' 
                     : 'bg-slate-900 border-slate-800 text-emerald-300'
-                }`}>
+                }`} dir="ltr">
                   {selectedLineObj.code}
                 </div>
 
@@ -245,7 +247,7 @@ export function PythonCodeExplorer() {
                     isDark ? 'text-slate-300' : 'text-slate-700'
                   }`}>
                     <Info className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>What This Line Does</span>
+                    <span>{t.python.whatItDoes}</span>
                   </h4>
                   <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                     {selectedLineObj.explanation}
@@ -262,7 +264,7 @@ export function PythonCodeExplorer() {
                     isDark ? 'text-cyan-300' : 'text-cyan-800 font-bold'
                   }`}>
                     <Cpu className="w-3.5 h-3.5 text-cyan-500" />
-                    <span>Underlying Data Structure Mechanics</span>
+                    <span>{t.python.underlyingDs}</span>
                   </h4>
                   <p className={`text-xs leading-relaxed font-sans ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     {selectedLineObj.logic}
@@ -273,7 +275,7 @@ export function PythonCodeExplorer() {
                 <div className={`mt-5 pt-4 border-t text-[11px] leading-normal ${
                   isDark ? 'border-slate-800/80 text-slate-500' : 'border-slate-200 text-slate-500'
                 }`}>
-                  <strong className={isDark ? 'text-slate-400' : 'text-slate-700'}>Architectural Note: </strong>
+                  <strong className={isDark ? 'text-slate-400' : 'text-slate-700'}>{t.python.archNote}</strong>
                   {currentImpl.summary}
                 </div>
               </div>
@@ -282,7 +284,7 @@ export function PythonCodeExplorer() {
                 isDark ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-600 shadow-sm'
               }`}>
                 <Info className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                <p className="text-sm font-medium">Select any line on the left</p>
+                <p className="text-sm font-medium">{t.python.selectLinePrompt}</p>
               </div>
             )}
 
@@ -291,23 +293,27 @@ export function PythonCodeExplorer() {
               isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
             }`}>
               <h5 className={`text-xs font-semibold mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                Memory Allocation Tradeoffs
+                {t.python.memoryTradeoffsTitle}
               </h5>
               <div className="grid grid-cols-2 gap-3 text-[11px]">
                 <div className={`p-2.5 rounded border ${
                   isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-mono block font-semibold mb-1">Python List</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-mono block font-semibold mb-1">
+                    {t.python.listTitle}
+                  </span>
                   <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-                    Contiguous buffer in RAM. Fast index lookups. Occasional resizing reallocates buffer.
+                    {t.python.listDesc}
                   </span>
                 </div>
                 <div className={`p-2.5 rounded border ${
                   isDark ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}>
-                  <span className="text-cyan-600 dark:text-cyan-400 font-mono block font-semibold mb-1">collections.deque</span>
+                  <span className="text-cyan-600 dark:text-cyan-400 font-mono block font-semibold mb-1">
+                    {t.python.dequeTitle}
+                  </span>
                   <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-                    Blocks of 64 pointers doubly-linked. Zero reallocation spikes. Strict O(1) always.
+                    {t.python.dequeDesc}
                   </span>
                 </div>
               </div>

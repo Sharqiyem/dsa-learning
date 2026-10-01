@@ -10,14 +10,17 @@ import {
   AlertOctagon,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function CoreOperations() {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
 
   const operations = [
     {
       name: 'push(element)',
-      action: 'Insert item onto TOP',
+      action: isArabic ? 'إضافة عنصر إلى قمة المكدس TOP' : 'Insert item onto TOP',
       time: 'O(1) amortized',
       space: 'O(1)',
       icon: ArrowDownCircle,
@@ -26,13 +29,15 @@ export function CoreOperations() {
       borderColorLight: 'border-emerald-300',
       bgGlowDark: 'bg-emerald-950/20',
       bgGlowLight: 'bg-emerald-50',
-      description: 'Places a new data item at the top of the stack. In dynamic arrays, if buffer capacity is exhausted, memory is doubled before insertion.',
+      description: isArabic
+        ? 'تضع عنصراً جديداً في قمة المكدس TOP. في المصفوفات الديناميكية (Python list) تتضاعف السعة تلقائياً عند امتلاء المخزن المؤقت.'
+        : 'Places a new data item at the top of the stack. In dynamic arrays, if buffer capacity is exhausted, memory is doubled before insertion.',
       pythonCode: 'stack.append(element)',
-      invariants: 'Stack size increments by 1. The new element becomes the top.',
+      invariants: isArabic ? 'يزداد حجم المكدس بمقدار 1. يصبح العنصر الجديد هو القمة TOP.' : 'Stack size increments by 1. The new element becomes the top.',
     },
     {
       name: 'pop()',
-      action: 'Remove & return TOP item',
+      action: isArabic ? 'حذف واسترجاع عنصر القمة TOP' : 'Remove & return TOP item',
       time: 'O(1) strict',
       space: 'O(1)',
       icon: ArrowUpCircle,
@@ -41,13 +46,15 @@ export function CoreOperations() {
       borderColorLight: 'border-rose-300',
       bgGlowDark: 'bg-rose-950/20',
       bgGlowLight: 'bg-rose-50',
-      description: 'Extracts the most recently pushed element and hands it back to the caller. Must check isEmpty() to prevent Stack Underflow.',
+      description: isArabic
+        ? 'تستخرج العنصر الأحدث وتُعيده للبرنامج المستدعي. يجب فحص isEmpty() لتجنب خطأ Stack Underflow.'
+        : 'Extracts the most recently pushed element and hands it back to the caller. Must check isEmpty() to prevent Stack Underflow.',
       pythonCode: 'item = stack.pop()',
-      invariants: 'Stack size decrements by 1. Item beneath becomes the new top.',
+      invariants: isArabic ? 'ينقص حجم المكدس بمقدار 1. العنصر السابق يصبح هو القمة الجديدة.' : 'Stack size decrements by 1. Item beneath becomes the new top.',
     },
     {
       name: 'peek() / top()',
-      action: 'Inspect TOP without removal',
+      action: isArabic ? 'معاينة القمة TOP دون إزالتها' : 'Inspect TOP without removal',
       time: 'O(1) strict',
       space: 'O(1)',
       icon: Eye,
@@ -56,13 +63,15 @@ export function CoreOperations() {
       borderColorLight: 'border-cyan-300',
       bgGlowDark: 'bg-cyan-950/20',
       bgGlowLight: 'bg-cyan-50',
-      description: 'Observes the topmost element without modifying internal array state or popping it off. Safe read-only inspection.',
+      description: isArabic
+        ? 'تطلع على القيمة الموجودة في القمة بدون أي تعديل على مصفوفة الذاكرة. عملية قراءة آمنة وخالية من الآثار الجانبية.'
+        : 'Observes the topmost element without modifying internal array state or popping it off. Safe read-only inspection.',
       pythonCode: 'item = stack[-1]',
-      invariants: 'Stack state, size, and order remain completely unchanged.',
+      invariants: isArabic ? 'حالة المكدس وحجمه وترتيبه تظل مطابقة دون أي تغيير.' : 'Stack state, size, and order remain completely unchanged.',
     },
     {
       name: 'isEmpty()',
-      action: 'Check if stack has 0 items',
+      action: isArabic ? 'فحص ما إذا كان المكدس يحتوي 0 عناصر' : 'Check if stack has 0 items',
       time: 'O(1) strict',
       space: 'O(1)',
       icon: CheckCircle,
@@ -71,13 +80,15 @@ export function CoreOperations() {
       borderColorLight: 'border-indigo-300',
       bgGlowDark: 'bg-indigo-950/20',
       bgGlowLight: 'bg-indigo-50',
-      description: 'Returns boolean True if no elements reside in the stack, preventing dangerous underflow operations before executing pop() or peek().',
+      description: isArabic
+        ? 'تُرجع True منطقياً إذا كان المكدس خالياً تماماً، مما يمنع حدوث أخطاء runtime قبل تنفيذ pop() أو peek().'
+        : 'Returns boolean True if no elements reside in the stack, preventing dangerous underflow operations before executing pop() or peek().',
       pythonCode: 'return len(stack) == 0',
-      invariants: 'Pure predicate function; zero side-effects.',
+      invariants: isArabic ? 'دالة شرطية استعلامية نقية بدون أي تعديل على الذاكرة.' : 'Pure predicate function; zero side-effects.',
     },
     {
       name: 'size() / len()',
-      action: 'Return count of elements',
+      action: isArabic ? 'إرجاع عدد العناصر الإجمالي' : 'Return count of elements',
       time: 'O(1) strict',
       space: 'O(1)',
       icon: Hash,
@@ -86,13 +97,15 @@ export function CoreOperations() {
       borderColorLight: 'border-violet-300',
       bgGlowDark: 'bg-violet-950/20',
       bgGlowLight: 'bg-violet-50',
-      description: 'Returns current height of the stack. CPython caches the size counter in the list header struct, so length calculation requires zero iteration.',
+      description: isArabic
+        ? 'تُرجع الارتفاع الحالي للمكدس. يحفظ مفسر CPython عداد ob_size في ترويسة الكائن، فلا يحتاج أي تكرار أو مسح.'
+        : 'Returns current height of the stack. CPython caches the size counter in the list header struct, so length calculation requires zero iteration.',
       pythonCode: 'return len(stack)',
-      invariants: 'Integer value between 0 and capacity.',
+      invariants: isArabic ? 'قيمة عددية صحيحة تقع بين 0 وأقصى سعة ممكنة.' : 'Integer value between 0 and capacity.',
     },
     {
       name: 'isFull()',
-      action: 'Check capacity limit',
+      action: isArabic ? 'التحقق من بلوغ أقصى سعة' : 'Check capacity limit',
       time: 'O(1) strict',
       space: 'O(1)',
       icon: AlertOctagon,
@@ -101,9 +114,11 @@ export function CoreOperations() {
       borderColorLight: 'border-amber-300',
       bgGlowDark: 'bg-amber-950/20',
       bgGlowLight: 'bg-amber-50',
-      description: 'In bounded physical hardware buffers or fixed-length stacks, returns True if size has reached max capacity, guarding against overflow.',
+      description: isArabic
+        ? 'في مكدسات العتاد والمخازن ذات السعة الثابتة، تُرجع True عند وصول العناصر للحد الأقصى لمنع الانهيار.'
+        : 'In bounded physical hardware buffers or fixed-length stacks, returns True if size has reached max capacity, guarding against overflow.',
       pythonCode: 'return len(stack) >= capacity',
-      invariants: 'Signals when push() will trigger Stack Overflow.',
+      invariants: isArabic ? 'تنبه النظام قبل أن تتسبب عملية push() في خطأ Stack Overflow.' : 'Signals when push() will trigger Stack Overflow.',
     },
   ];
 
@@ -117,17 +132,15 @@ export function CoreOperations() {
           <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
             isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
           }`}>
-            <span>ABSTRACT DATA TYPE (ADT)</span>
-            <span aria-hidden="true">·</span>
-            <span>CORE PRIMITIVES</span>
+            <span>{t.operations.badge}</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
             isDark ? 'text-white' : 'text-slate-950'
           }`}>
-            Fundamental Stack Operations
+            {t.operations.title}
           </h2>
           <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            The mathematical contract of the Stack data structure. Each method executes with strict asymptotic performance bounds.
+            {t.operations.subtitle}
           </p>
         </div>
 
@@ -201,7 +214,7 @@ export function CoreOperations() {
                     <span className="text-[10px] text-slate-400">Python</span>
                   </div>
                   <div className={`text-[11px] leading-snug ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <strong className={isDark ? 'text-slate-300' : 'text-slate-800'}>Invariant: </strong>
+                    <strong className={isDark ? 'text-slate-300' : 'text-slate-800'}>{t.operations.invariantPrefix}</strong>
                     {op.invariants}
                   </div>
                 </div>

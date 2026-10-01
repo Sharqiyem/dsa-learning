@@ -13,9 +13,13 @@ import {
   Cpu
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function RealWorldSimulators() {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const [activeTab, setActiveTab] = useState<'parentheses' | 'undoredo' | 'callstack'>('parentheses');
 
   // --- 1. Balanced Parentheses State ---
@@ -25,22 +29,40 @@ export function RealWorldSimulators() {
   const [parenStatus, setParenStatus] = useState<{
     status: 'idle' | 'running' | 'valid' | 'invalid';
     msg: string;
-  }>({ status: 'idle', msg: 'Click "Start Trace" or "Step Forward" to inspect bracket parsing.' });
+  }>({ 
+    status: 'idle', 
+    msg: isArabic 
+      ? 'اضغط "خطوة للأمام" أو "محاكاة تلقائية" لبدء فحص الأقواس.' 
+      : 'Click "Start Trace" or "Step Forward" to inspect bracket parsing.' 
+  });
 
   const resetParenTrace = (newStr?: string) => {
     const target = newStr !== undefined ? newStr : parenInput;
     setParenInput(target);
     setParenStep(0);
     setParenStack([]);
-    setParenStatus({ status: 'idle', msg: 'Trace reset. Ready to analyze.' });
+    setParenStatus({ 
+      status: 'idle', 
+      msg: isArabic ? 'تمت إعادة الضبط. النظام جاهز للفحص.' : 'Trace reset. Ready to analyze.' 
+    });
   };
 
   const stepParenTrace = () => {
     if (parenStep >= parenInput.length) {
       if (parenStack.length === 0) {
-        setParenStatus({ status: 'valid', msg: 'Success! All brackets closed properly. Stack is empty -> String is BALANCED.' });
+        setParenStatus({ 
+          status: 'valid', 
+          msg: isArabic 
+            ? 'نجاح! تم إغلاق جميع الأقواس بترتيب صحيح. المكدس فارغ -> التعبير متوازن (BALANCED).' 
+            : 'Success! All brackets closed properly. Stack is empty -> String is BALANCED.' 
+        });
       } else {
-        setParenStatus({ status: 'invalid', msg: `Error! Remaining unclosed brackets on stack: [${parenStack.join(', ')}] -> String is UNBALANCED.` });
+        setParenStatus({ 
+          status: 'invalid', 
+          msg: isArabic 
+            ? `خطأ! لا زالت هناك أقواس مفتوحة لم تُغلق: [${parenStack.join(', ')}] -> التعبير غير متوازن (UNBALANCED).` 
+            : `Error! Remaining unclosed brackets on stack: [${parenStack.join(', ')}] -> String is UNBALANCED.` 
+        });
       }
       return;
     }
@@ -53,14 +75,18 @@ export function RealWorldSimulators() {
       setParenStep((prev) => prev + 1);
       setParenStatus({
         status: 'running',
-        msg: `Scanned opening bracket '${char}' -> PUSHED onto stack. Current stack: [${[...parenStack, char].join(', ')}]`,
+        msg: isArabic 
+          ? `تم رصد قوس فتح '${char}' -> PUSH إلى المكدس. حالة المكدس الآن: [${[...parenStack, char].join(', ')}]` 
+          : `Scanned opening bracket '${char}' -> PUSHED onto stack. Current stack: [${[...parenStack, char].join(', ')}]`,
       });
     } else if (char === ')' || char === ']' || char === '}') {
       const expected = matchMap[char];
       if (parenStack.length === 0) {
         setParenStatus({
           status: 'invalid',
-          msg: `Syntax Error! Encountered closing '${char}' but stack is empty (No opening counterpart).`,
+          msg: isArabic 
+            ? `خطأ تركيبي! وُجد قوس إغلاق '${char}' لكن المكدس فارغ تماماً (لا يوجد قوس فتح يقابله).` 
+            : `Syntax Error! Encountered closing '${char}' but stack is empty (No opening counterpart).`,
         });
         setParenStep(parenInput.length);
         return;
@@ -72,12 +98,16 @@ export function RealWorldSimulators() {
         setParenStep((prev) => prev + 1);
         setParenStatus({
           status: 'running',
-          msg: `Scanned closing '${char}' -> Matches top '${top}'. POPPED '${top}' from stack!`,
+          msg: isArabic 
+            ? `تم رصد قوس إغلاق '${char}' -> يطابق قمة المكدس '${top}'. تمت إزالة '${top}' عبر POP!` 
+            : `Scanned closing '${char}' -> Matches top '${top}'. POPPED '${top}' from stack!`,
         });
       } else {
         setParenStatus({
           status: 'invalid',
-          msg: `Mismatch Error! Encountered '${char}' which expects '${expected}', but top is '${top}'.`,
+          msg: isArabic 
+            ? `خطأ عدم تطابق! وُجد '${char}' ويتطلب '${expected}'، لكن قمة المكدس هي '${top}'.` 
+            : `Mismatch Error! Encountered '${char}' which expects '${expected}', but top is '${top}'.`,
         });
         setParenStep(parenInput.length);
       }
@@ -123,15 +153,60 @@ export function RealWorldSimulators() {
   // --- 3. Recursive Call Stack Simulation ---
   const [recursionStep, setRecursionStep] = useState<number>(0);
   const recursionTimeline = [
-    { frame: 'main()', action: 'Invokes factorial(4)', stack: ['main()'], val: null },
-    { frame: 'factorial(4)', action: 'Pushes frame: n = 4, waiting on 4 * factorial(3)', stack: ['main()', 'factorial(4)'], val: null },
-    { frame: 'factorial(3)', action: 'Pushes frame: n = 3, waiting on 3 * factorial(2)', stack: ['main()', 'factorial(4)', 'factorial(3)'], val: null },
-    { frame: 'factorial(2)', action: 'Pushes frame: n = 2, waiting on 2 * factorial(1)', stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)'], val: null },
-    { frame: 'factorial(1)', action: 'Pushes frame: n = 1, Base case reached! Returns 1', stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)', 'factorial(1)'], val: '1' },
-    { frame: 'factorial(2)', action: 'Pops frame 1: Receives 1. Computes 2 * 1 = 2. Returns 2', stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)'], val: '2' },
-    { frame: 'factorial(3)', action: 'Pops frame 2: Receives 2. Computes 3 * 2 = 6. Returns 6', stack: ['main()', 'factorial(4)', 'factorial(3)'], val: '6' },
-    { frame: 'factorial(4)', action: 'Pops frame 3: Receives 6. Computes 4 * 6 = 24. Returns 24', stack: ['main()', 'factorial(4)'], val: '24' },
-    { frame: 'main()', action: 'All frames unrolled. Final Result: factorial(4) = 24', stack: ['main()'], val: 'Result: 24' },
+    { 
+      frame: 'main()', 
+      action: isArabic ? 'استدعاء دالة factorial(4)' : 'Invokes factorial(4)', 
+      stack: ['main()'], 
+      val: null 
+    },
+    { 
+      frame: 'factorial(4)', 
+      action: isArabic ? 'دفع إطار: n = 4، المعالج ينتظر نتيجة 4 * factorial(3)' : 'Pushes frame: n = 4, waiting on 4 * factorial(3)', 
+      stack: ['main()', 'factorial(4)'], 
+      val: null 
+    },
+    { 
+      frame: 'factorial(3)', 
+      action: isArabic ? 'دفع إطار: n = 3، المعالج ينتظر نتيجة 3 * factorial(2)' : 'Pushes frame: n = 3, waiting on 3 * factorial(2)', 
+      stack: ['main()', 'factorial(4)', 'factorial(3)'], 
+      val: null 
+    },
+    { 
+      frame: 'factorial(2)', 
+      action: isArabic ? 'دفع إطار: n = 2، المعالج ينتظر نتيجة 2 * factorial(1)' : 'Pushes frame: n = 2, waiting on 2 * factorial(1)', 
+      stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)'], 
+      val: null 
+    },
+    { 
+      frame: 'factorial(1)', 
+      action: isArabic ? 'دفع إطار: n = 1، تحقق شرط التوقف Base Case! تُرجع الدالة 1' : 'Pushes frame: n = 1, Base case reached! Returns 1', 
+      stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)', 'factorial(1)'], 
+      val: '1' 
+    },
+    { 
+      frame: 'factorial(2)', 
+      action: isArabic ? 'سحب إطار 1: استلام 1. حساب 2 * 1 = 2. تُرجع الدالة 2' : 'Pops frame 1: Receives 1. Computes 2 * 1 = 2. Returns 2', 
+      stack: ['main()', 'factorial(4)', 'factorial(3)', 'factorial(2)'], 
+      val: '2' 
+    },
+    { 
+      frame: 'factorial(3)', 
+      action: isArabic ? 'سحب إطار 2: استلام 2. حساب 3 * 2 = 6. تُرجع الدالة 6' : 'Pops frame 2: Receives 2. Computes 3 * 2 = 6. Returns 6', 
+      stack: ['main()', 'factorial(4)', 'factorial(3)'], 
+      val: '6' 
+    },
+    { 
+      frame: 'factorial(4)', 
+      action: isArabic ? 'سحب إطار 3: استلام 6. حساب 4 * 6 = 24. تُرجع الدالة 24' : 'Pops frame 3: Receives 6. Computes 4 * 6 = 24. Returns 24', 
+      stack: ['main()', 'factorial(4)'], 
+      val: '24' 
+    },
+    { 
+      frame: 'main()', 
+      action: isArabic ? 'انتهت كافة الإطارات. النتيجة النهائية: factorial(4) = 24' : 'All frames unrolled. Final Result: factorial(4) = 24', 
+      stack: ['main()'], 
+      val: isArabic ? 'النتيجة: 24' : 'Result: 24' 
+    },
   ];
 
   const currentRec = recursionTimeline[recursionStep];
@@ -146,17 +221,15 @@ export function RealWorldSimulators() {
           <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
             isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'
           }`}>
-            <span>REAL-WORLD SYSTEMS</span>
-            <span aria-hidden="true">·</span>
-            <span>WHY STACKS MATTER</span>
+            <span>{t.applications.badge}</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
             isDark ? 'text-white' : 'text-slate-950'
           }`}>
-            Applied Stack Simulations
+            {t.applications.title}
           </h2>
           <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            Explore how modern software engineering relies on stacks for parsing compilers, managing document undo history, and allocating function activation frames.
+            {t.applications.subtitle}
           </p>
         </div>
 
@@ -174,7 +247,7 @@ export function RealWorldSimulators() {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            1. Balanced Brackets
+            {t.applications.tabParentheses}
           </button>
           <button
             onClick={() => setActiveTab('undoredo')}
@@ -186,7 +259,7 @@ export function RealWorldSimulators() {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            2. Undo / Redo Stacks
+            {t.applications.tabUndoRedo}
           </button>
           <button
             onClick={() => setActiveTab('callstack')}
@@ -198,7 +271,7 @@ export function RealWorldSimulators() {
                 : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            3. CPU Call Stack
+            {t.applications.tabCallStack}
           </button>
         </div>
 
@@ -212,17 +285,17 @@ export function RealWorldSimulators() {
                 isDark ? 'border-slate-800' : 'border-slate-200'
               }`}>
                 <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Syntax Scanner Visualizer
+                  {t.applications.scannerTitle}
                 </h3>
                 <span className={`text-xs font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'}`}>
-                  Compiler Lexer / AST
+                  {t.applications.compilerBadge}
                 </span>
               </div>
 
               {/* Input String Preview with Pointer */}
               <div className="mb-6">
                 <label className={`block text-xs font-medium mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Input Expression:
+                  {t.applications.inputExprLabel}
                 </label>
                 <div className="flex gap-2 mb-3">
                   <input
@@ -239,13 +312,13 @@ export function RealWorldSimulators() {
                       isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                     }`}
                   >
-                    Reset
+                    {t.applications.resetBtn}
                   </button>
                 </div>
 
                 {/* Preset Chips */}
                 <div className="flex items-center gap-1.5 text-xs text-slate-500 flex-wrap mb-4">
-                  <span>Presets:</span>
+                  <span>{t.applications.presetsLabel}</span>
                   {['{[()()]}', '{[(])}', '((()))', '({[]})', '(()', '{[}'].map((preset) => (
                     <button
                       key={preset}
@@ -265,8 +338,8 @@ export function RealWorldSimulators() {
                 <div className={`p-4 rounded-xl border ${
                   isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-50 border-slate-200'
                 }`}>
-                  <div className="text-[11px] font-mono text-slate-500 mb-2">Token Scan Stream:</div>
-                  <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                  <div className="text-[11px] font-mono text-slate-500 mb-2">{t.applications.tokenStreamLabel}</div>
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2" dir="ltr">
                     {parenInput.split('').map((ch, idx) => {
                       const isCurrent = idx === parenStep && parenStep < parenInput.length;
                       const isProcessed = idx < parenStep;
@@ -322,7 +395,7 @@ export function RealWorldSimulators() {
                   className="flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-semibold shadow-md active:scale-95"
                 >
                   <SkipForward className="w-4 h-4" />
-                  <span>Step Forward</span>
+                  <span>{t.applications.stepForwardBtn}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -343,7 +416,7 @@ export function RealWorldSimulators() {
                   }`}
                 >
                   <Play className="w-4 h-4" />
-                  <span>Auto-Trace</span>
+                  <span>{t.applications.autoTraceBtn}</span>
                 </button>
               </div>
             </div>
@@ -355,10 +428,10 @@ export function RealWorldSimulators() {
               <h4 className={`text-xs font-semibold mb-2 uppercase tracking-wider ${
                 isDark ? 'text-slate-300' : 'text-slate-700'
               }`}>
-                Bracket Stack State
+                {t.applications.bracketStackTitle}
               </h4>
               <div className="text-[11px] text-slate-500 mb-4 font-mono">
-                {"Pushes '(', '{', '[' · Pops on matching ')', '}', ']'"}
+                {t.applications.bracketStackDesc}
               </div>
 
               <div className={`w-full max-w-[240px] min-h-[220px] border-x-4 border-b-4 rounded-b-xl flex flex-col-reverse p-3 gap-2 ${
@@ -366,7 +439,7 @@ export function RealWorldSimulators() {
               }`}>
                 {parenStack.length === 0 ? (
                   <div className="flex-1 flex items-center justify-center text-[11px] text-slate-500 font-mono">
-                    [ Stack Empty ]
+                    {t.applications.stackEmptyLabel}
                   </div>
                 ) : (
                   parenStack.map((bracket, idx) => (
@@ -390,7 +463,7 @@ export function RealWorldSimulators() {
                 )}
               </div>
               <div className="w-full max-w-[240px] mt-1 text-center text-[10px] font-mono text-slate-500">
-                LIFO Stack Tube
+                {t.applications.lifoTubeLabel}
               </div>
             </div>
           </div>
@@ -406,10 +479,10 @@ export function RealWorldSimulators() {
                 isDark ? 'border-slate-800' : 'border-slate-200'
               }`}>
                 <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  Document Editor State
+                  {t.applications.editorTitle}
                 </h3>
                 <span className={`text-xs font-mono ${isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'}`}>
-                  Dual-Stack Memento
+                  {t.applications.mementoBadge}
                 </span>
               </div>
 
@@ -417,11 +490,11 @@ export function RealWorldSimulators() {
               <div className={`p-4 rounded-xl border min-h-[120px] mb-4 ${
                 isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'
               }`}>
-                <div className="text-[10px] font-mono text-slate-500 mb-1">Canvas / Buffer:</div>
+                <div className="text-[10px] font-mono text-slate-500 mb-1">{t.applications.canvasBufferLabel}</div>
                 <div className={`text-lg font-mono min-h-[30px] border-b pb-2 ${
                   isDark ? 'border-slate-800 text-white' : 'border-slate-200 text-slate-900'
                 }`}>
-                  {editorText || <span className="text-slate-400 italic">Empty document...</span>}
+                  {editorText || <span className="text-slate-400 italic">{t.applications.emptyDocPlaceholder}</span>}
                   <span className="inline-block w-2 h-5 bg-cyan-500 ml-1 animate-pulse" />
                 </div>
               </div>
@@ -435,7 +508,7 @@ export function RealWorldSimulators() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') handleTypeWord(nextWord);
                   }}
-                  placeholder="Type word to append..."
+                  placeholder={t.applications.typePlaceholder}
                   className={`flex-1 border rounded-lg px-3 py-1.5 text-sm ${
                     isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'
                   }`}
@@ -444,7 +517,7 @@ export function RealWorldSimulators() {
                   onClick={() => handleTypeWord(nextWord)}
                   className="px-4 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 rounded-lg text-xs font-semibold shadow-sm"
                 >
-                  Type
+                  {t.applications.typeBtn}
                 </button>
               </div>
 
@@ -462,7 +535,7 @@ export function RealWorldSimulators() {
                   }`}
                 >
                   <Undo2 className="w-4 h-4 text-emerald-500" />
-                  <span>Undo (Pop Undo Stack)</span>
+                  <span>{t.applications.undoBtn}</span>
                 </button>
 
                 <button
@@ -477,7 +550,7 @@ export function RealWorldSimulators() {
                   }`}
                 >
                   <Redo2 className="w-4 h-4 text-cyan-500" />
-                  <span>Redo (Pop Redo Stack)</span>
+                  <span>{t.applications.redoBtn}</span>
                 </button>
               </div>
             </div>
@@ -488,7 +561,9 @@ export function RealWorldSimulators() {
               <div className={`border rounded-2xl p-4 flex flex-col items-center transition-colors ${
                 isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
               }`}>
-                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700 font-bold'}`}>Undo Stack</div>
+                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-emerald-400' : 'text-emerald-700 font-bold'}`}>
+                  {t.applications.undoStackTitle}
+                </div>
                 <div className="text-[10px] text-slate-500 mb-3">{undoStack.length} snapshots</div>
 
                 <div className={`w-full min-h-[200px] border-x-2 border-b-2 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden ${
@@ -507,14 +582,16 @@ export function RealWorldSimulators() {
                     </div>
                   ))}
                 </div>
-                <span className="text-[10px] text-slate-500 mt-1">TOP = Current State</span>
+                <span className="text-[10px] text-slate-500 mt-1">{t.applications.currentTopState}</span>
               </div>
 
               {/* Redo Stack */}
               <div className={`border rounded-2xl p-4 flex flex-col items-center transition-colors ${
                 isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
               }`}>
-                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-700 font-bold'}`}>Redo Stack</div>
+                <div className={`text-xs font-semibold mb-1 ${isDark ? 'text-cyan-400' : 'text-cyan-700 font-bold'}`}>
+                  {t.applications.redoStackTitle}
+                </div>
                 <div className="text-[10px] text-slate-500 mb-3">{redoStack.length} snapshots</div>
 
                 <div className={`w-full min-h-[200px] border-x-2 border-b-2 rounded-b-lg flex flex-col-reverse p-2 gap-1.5 overflow-hidden ${
@@ -539,7 +616,7 @@ export function RealWorldSimulators() {
                     ))
                   )}
                 </div>
-                <span className="text-[10px] text-slate-500 mt-1">TOP = Next Redo</span>
+                <span className="text-[10px] text-slate-500 mt-1">{t.applications.nextRedoTop}</span>
               </div>
             </div>
           </div>
@@ -558,17 +635,17 @@ export function RealWorldSimulators() {
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}>
                   <Cpu className="w-4 h-4 text-violet-500" />
-                  <span>Call Stack Execution: factorial(4)</span>
+                  <span>{t.applications.callStackTitle}</span>
                 </h3>
                 <span className={`text-xs font-mono ${isDark ? 'text-violet-400' : 'text-violet-700 font-semibold'}`}>
-                  Step {recursionStep + 1} / {recursionTimeline.length}
+                  {t.applications.callStackStep} {recursionStep + 1} / {recursionTimeline.length}
                 </span>
               </div>
 
               {/* Python Function Code */}
               <div className={`p-4 rounded-xl border font-mono text-xs mb-4 leading-relaxed ${
                 isDark ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-800'
-              }`}>
+              }`} dir="ltr">
                 <div className="text-slate-500"># Recursive implementation</div>
                 <div><span className="text-violet-600 dark:text-violet-400 font-semibold">def</span> <span className="text-emerald-600 dark:text-emerald-400 font-semibold">factorial</span>(n):</div>
                 <div className="pl-4">if n &lt;= 1:</div>
@@ -585,7 +662,7 @@ export function RealWorldSimulators() {
                 <div className={`text-xs font-semibold mb-1 ${
                   isDark ? 'text-violet-300' : 'text-violet-900'
                 }`}>
-                  Active Frame: {currentRec.frame}
+                  {t.applications.activeFrameLabel} {currentRec.frame}
                 </div>
                 <div className={`text-xs leading-normal ${
                   isDark ? 'text-slate-300' : 'text-slate-700'
@@ -598,7 +675,7 @@ export function RealWorldSimulators() {
                       ? 'text-emerald-400 bg-slate-950/80 border-slate-800' 
                       : 'text-emerald-800 bg-white border-slate-200 font-semibold shadow-sm'
                   }`}>
-                    Yield Value: {currentRec.val}
+                    {t.applications.yieldValueLabel} {currentRec.val}
                   </div>
                 )}
               </div>
@@ -614,20 +691,20 @@ export function RealWorldSimulators() {
                     isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 shadow-sm'
                   }`}
                 >
-                  Step Back
+                  {t.applications.stepBackBtn}
                 </button>
                 <button
                   onClick={() => setRecursionStep((prev) => Math.min(recursionTimeline.length - 1, prev + 1))}
                   disabled={recursionStep === recursionTimeline.length - 1}
                   className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold shadow-md active:scale-95 disabled:opacity-40"
                 >
-                  Step Forward
+                  {t.applications.stepForwardBtn}
                 </button>
                 <button
                   onClick={() => setRecursionStep(0)}
                   className={`px-3 py-2 text-xs ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
                 >
-                  Reset
+                  {t.applications.resetSimBtn}
                 </button>
               </div>
             </div>
@@ -639,10 +716,10 @@ export function RealWorldSimulators() {
               <h4 className={`text-xs font-semibold mb-1 uppercase tracking-wider ${
                 isDark ? 'text-slate-300' : 'text-slate-700'
               }`}>
-                System Call Stack (RAM)
+                {t.applications.sysRamTitle}
               </h4>
               <p className="text-[11px] text-slate-500 mb-4 text-center">
-                Stack grows upward in memory. Top frame holds CPU execution pointer (PC).
+                {t.applications.sysRamDesc}
               </p>
 
               <div className={`w-full max-w-[280px] min-h-[260px] border-x-4 border-b-4 rounded-b-xl flex flex-col-reverse p-3 gap-2 ${
@@ -680,7 +757,7 @@ export function RealWorldSimulators() {
                   );
                 })}
               </div>
-              <div className="w-full max-w-[280px] mt-1 flex justify-between text-[10px] font-mono text-slate-500">
+              <div className="w-full max-w-[280px] mt-1 flex justify-between text-[10px] font-mono text-slate-500" dir="ltr">
                 <span>0x0000 (Base)</span>
                 <span>0x7FFF (High Memory)</span>
               </div>

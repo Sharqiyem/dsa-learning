@@ -14,6 +14,7 @@ import {
   Layers
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export interface StackElement {
   id: string;
@@ -56,6 +57,9 @@ const COLOR_PALETTE = [
 
 export function StackVisualizer() {
   const { isDark } = useTheme();
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const [capacity, setCapacity] = useState<number>(6);
   const [elements, setElements] = useState<StackElement[]>([
     { id: '1', value: 10, colorDark: COLOR_PALETTE[0].dark, colorLight: COLOR_PALETTE[0].light, timestamp: '10:00:01' },
@@ -70,8 +74,10 @@ export function StackVisualizer() {
     description: string;
   } | null>({
     type: 'info',
-    title: 'Ready',
-    description: 'Use the controls below to push, pop, or inspect the top element.',
+    title: isArabic ? 'جاهز للعمليات' : 'Ready',
+    description: isArabic 
+      ? 'استخدم عناصر التحكم أدناه لدفع (Push) أو سحب (Pop) أو معاينة (Peek) العنصر العلوي.' 
+      : 'Use the controls below to push, pop, or inspect the top element.',
   });
 
   const [operationLog, setOperationLog] = useState<Array<{
@@ -105,8 +111,10 @@ export function StackVisualizer() {
     if (elements.length >= capacity) {
       setStatusMessage({
         type: 'error',
-        title: 'Stack Overflow Error!',
-        description: `Cannot push "${valueToPush}". Stack capacity limit (${capacity}) reached. In real memory, pushing to a full stack crashes the process or corrupts the heap.`,
+        title: isArabic ? 'خطأ تجاوز السعة: Stack Overflow!' : 'Stack Overflow Error!',
+        description: isArabic
+          ? `لا يمكن إضافة "${valueToPush}". تم الوصول للحد الأقصى للسعة (${capacity}). في الذاكرة الحقيقية يؤدي ذلك لانهيار البرنامج.`
+          : `Cannot push "${valueToPush}". Stack capacity limit (${capacity}) reached. In real memory, pushing to a full stack crashes the process or corrupts the heap.`,
       });
       setOperationLog((prev) => [
         {
@@ -136,8 +144,10 @@ export function StackVisualizer() {
 
     setStatusMessage({
       type: 'success',
-      title: 'PUSH Operation Successful',
-      description: `Pushed "${valueToPush}" onto TOP (Index ${elements.length}). Stack size is now ${elements.length + 1}.`,
+      title: isArabic ? 'تمت عملية PUSH بنجاح' : 'PUSH Operation Successful',
+      description: isArabic
+        ? `تم دفع "${valueToPush}" إلى قمة المكدس TOP (المؤشر ${elements.length}). الحجم الحالي: ${elements.length + 1}.`
+        : `Pushed "${valueToPush}" onto TOP (Index ${elements.length}). Stack size is now ${elements.length + 1}.`,
     });
 
     setOperationLog((prev) => [
@@ -156,8 +166,10 @@ export function StackVisualizer() {
     if (elements.length === 0) {
       setStatusMessage({
         type: 'error',
-        title: 'Stack Underflow Error!',
-        description: 'Cannot pop from an empty stack. Python raises IndexError("pop from empty list"). Always check isEmpty() first!',
+        title: isArabic ? 'خطأ السحب من مكدس فارغ: Stack Underflow!' : 'Stack Underflow Error!',
+        description: isArabic
+          ? 'لا يمكن سحب عنصر من مكدس فارغ. في بايثون ينتج IndexError("pop from empty list"). تأكد دائماً من isEmpty() أولاً!'
+          : 'Cannot pop from an empty stack. Python raises IndexError("pop from empty list"). Always check isEmpty() first!',
       });
       setOperationLog((prev) => [
         {
@@ -178,8 +190,10 @@ export function StackVisualizer() {
 
     setStatusMessage({
       type: 'warning',
-      title: 'POP Operation Executed',
-      description: `Removed and returned top element "${poppedElement.value}" from Index ${elements.length - 1}. New size: ${elements.length - 1}.`,
+      title: isArabic ? 'تم تنفيذ عملية POP' : 'POP Operation Executed',
+      description: isArabic
+        ? `تم سحب واسترجاع العنصر العلوي "${poppedElement.value}" من المؤشر ${elements.length - 1}. الحجم الجديد: ${elements.length - 1}.`
+        : `Removed and returned top element "${poppedElement.value}" from Index ${elements.length - 1}. New size: ${elements.length - 1}.`,
     });
 
     setOperationLog((prev) => [
@@ -198,8 +212,8 @@ export function StackVisualizer() {
     if (elements.length === 0) {
       setStatusMessage({
         type: 'error',
-        title: 'Stack Underflow on Peek!',
-        description: 'Cannot peek at an empty stack. No top element exists.',
+        title: isArabic ? 'فشل المعاينة: Stack Underflow' : 'Stack Underflow on Peek!',
+        description: isArabic ? 'لا يمكن معاينة مكدس فارغ لعدم وجود عناصر.' : 'Cannot peek at an empty stack. No top element exists.',
       });
       setOperationLog((prev) => [
         {
@@ -220,8 +234,10 @@ export function StackVisualizer() {
 
     setStatusMessage({
       type: 'info',
-      title: 'PEEK / TOP Inspected',
-      description: `Top element is "${topElement.value}" at Index ${topIdx}. The stack state was NOT modified (size remains ${elements.length}).`,
+      title: isArabic ? 'تمت معاينة قمة المكدس (PEEK / TOP)' : 'PEEK / TOP Inspected',
+      description: isArabic
+        ? `العنصر في القمة هو "${topElement.value}" عند المؤشر ${topIdx}. لم يتم تعديل حالة المكدس (الحجم لا زال ${elements.length}).`
+        : `Top element is "${topElement.value}" at Index ${topIdx}. The stack state was NOT modified (size remains ${elements.length}).`,
     });
 
     setOperationLog((prev) => [
@@ -245,8 +261,8 @@ export function StackVisualizer() {
     setPeekingIndex(null);
     setStatusMessage({
       type: 'info',
-      title: 'Stack Cleared',
-      description: 'Removed all elements. Stack size is now 0.',
+      title: isArabic ? 'تم تفريغ المكدس بالكامل' : 'Stack Cleared',
+      description: isArabic ? 'تم حذف كافة العناصر. الحجم الآن 0.' : 'Removed all elements. Stack size is now 0.',
     });
     setOperationLog((prev) => [
       {
@@ -276,17 +292,15 @@ export function StackVisualizer() {
           <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
             isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'
           }`}>
-            <span>INTERACTIVE SIMULATOR</span>
-            <span aria-hidden="true">·</span>
-            <span>REAL-TIME ANIMATION</span>
+            <span>{t.visualizer.badge}</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
             isDark ? 'text-white' : 'text-slate-950'
           }`}>
-            Visual Stack Laboratory
+            {t.visualizer.title}
           </h2>
           <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            Watch elements enter and leave through the open TOP boundary. Experiment with capacity constraints, observe Stack Overflow & Underflow states, and inspect the real-time event log.
+            {t.visualizer.subtitle}
           </p>
         </div>
 
@@ -302,9 +316,9 @@ export function StackVisualizer() {
             }`}>
               <div className={`flex items-center gap-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 <Layers className="w-4 h-4 text-emerald-500" />
-                <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>LIFO Container</span>
+                <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t.visualizer.containerTitle}</span>
                 <span className="text-slate-400">|</span>
-                <span>Size: <strong className="text-emerald-600 dark:text-emerald-400 tabular-nums">{elements.length}</strong> / {capacity}</span>
+                <span>{t.visualizer.sizeLabel}: <strong className="text-emerald-600 dark:text-emerald-400 tabular-nums">{elements.length}</strong> / {capacity}</span>
               </div>
 
               {/* Status Indicator */}
@@ -312,17 +326,17 @@ export function StackVisualizer() {
                 {isFull ? (
                   <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400 font-mono text-xs font-medium">
                     <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                    FULL (OVERFLOW RISK)
+                    {t.visualizer.statusFull}
                   </span>
                 ) : isEmpty ? (
                   <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-mono text-xs font-medium">
                     <span className="w-2 h-2 rounded-full bg-amber-500" />
-                    EMPTY (UNDERFLOW RISK)
+                    {t.visualizer.statusEmpty}
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-medium">
                     <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    NOMINAL (ACTIVE)
+                    {t.visualizer.statusNominal}
                   </span>
                 )}
               </div>
@@ -333,8 +347,8 @@ export function StackVisualizer() {
               <div className={`flex items-center gap-2 text-xs font-mono mb-1 ${
                 isDark ? 'text-slate-400' : 'text-slate-500'
               }`}>
-                <span>[ OPEN TOP INLET ]</span>
-                <span className={isDark ? 'text-slate-600' : 'text-slate-400'}>-- PUSH & POP OCCUR HERE ONLY --</span>
+                <span>{t.visualizer.inletLabel}</span>
+                <span className={isDark ? 'text-slate-600' : 'text-slate-400'}>{t.visualizer.inletSub}</span>
               </div>
               <div className="w-48 h-2 border-t-2 border-dashed border-emerald-500/60" />
             </div>
@@ -353,9 +367,9 @@ export function StackVisualizer() {
                   }`}>
                     <Layers className="w-6 h-6" />
                   </div>
-                  <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Stack is currently empty</p>
+                  <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{t.visualizer.emptyText}</p>
                   <p className={`text-xs mt-1 max-w-[200px] ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>
-                    Push an element to begin. Any pop operation now triggers Stack Underflow.
+                    {t.visualizer.emptySub}
                   </p>
                 </div>
               )}
@@ -449,8 +463,8 @@ export function StackVisualizer() {
               <div className={`mt-1 flex justify-between items-center text-[11px] font-mono px-2 ${
                 isDark ? 'text-slate-500' : 'text-slate-500'
               }`}>
-                <span>[ CLOSED BASE / BOTTOM ]</span>
-                <span>INDEX 0</span>
+                <span>{t.visualizer.baseLabel}</span>
+                <span>{t.visualizer.indexZero}</span>
               </div>
             </div>
 
@@ -505,16 +519,16 @@ export function StackVisualizer() {
               <h3 className={`text-sm font-semibold mb-4 flex items-center justify-between ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}>
-                <span>Operation Controls</span>
+                <span>{t.visualizer.controlsTitle}</span>
                 <span className={`text-xs font-mono ${isDark ? 'text-emerald-400' : 'text-emerald-600 font-semibold'}`}>
-                  O(1) CONSTANT TIME
+                  {t.visualizer.timeComplexity}
                 </span>
               </h3>
 
               {/* Push Input Group */}
               <div className="space-y-3">
                 <label className={`block text-xs font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                  Value to Push
+                  {t.visualizer.inputLabel}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -523,7 +537,7 @@ export function StackVisualizer() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="e.g. 50, 'Apple', token"
+                    placeholder={t.visualizer.inputPlaceholder}
                     className={`flex-1 border rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors ${
                       isDark
                         ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500'
@@ -540,13 +554,13 @@ export function StackVisualizer() {
                     }`}
                   >
                     <ArrowDownCircle className="w-4 h-4" />
-                    <span>Push</span>
+                    <span>{t.visualizer.pushBtn}</span>
                   </button>
                 </div>
 
                 {/* Quick Preset Buttons */}
                 <div className="flex items-center gap-1.5 pt-1 text-xs text-slate-500 flex-wrap">
-                  <span>Quick Push:</span>
+                  <span>{t.visualizer.quickPush}</span>
                   <button
                     onClick={() => handlePush(Math.floor(Math.random() * 90 + 10))}
                     className={`px-2 py-0.5 rounded transition-colors ${
@@ -596,7 +610,7 @@ export function StackVisualizer() {
                   }`}
                 >
                   <ArrowUpCircle className="w-4 h-4" />
-                  <span>Pop [Top]</span>
+                  <span>{t.visualizer.popBtn}</span>
                 </button>
 
                 <button
@@ -611,7 +625,7 @@ export function StackVisualizer() {
                   }`}
                 >
                   <Eye className="w-4 h-4" />
-                  <span>Peek [Inspect]</span>
+                  <span>{t.visualizer.peekBtn}</span>
                 </button>
               </div>
 
@@ -623,7 +637,7 @@ export function StackVisualizer() {
                   }`}
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Clear All</span>
+                  <span>{t.visualizer.clearBtn}</span>
                 </button>
 
                 {/* Direct edge case testers */}
@@ -651,7 +665,7 @@ export function StackVisualizer() {
                     }}
                     className="text-[11px] font-mono text-rose-600 dark:text-rose-400 hover:underline"
                   >
-                    Test Overflow
+                    {t.visualizer.testOverflow}
                   </button>
                   <span className="text-slate-400">·</span>
                   <button
@@ -661,7 +675,7 @@ export function StackVisualizer() {
                     }}
                     className="text-[11px] font-mono text-amber-600 dark:text-amber-400 hover:underline"
                   >
-                    Test Underflow
+                    {t.visualizer.testUnderflow}
                   </button>
                 </div>
               </div>
@@ -670,7 +684,7 @@ export function StackVisualizer() {
               <div className={`mt-6 pt-5 border-t space-y-4 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
                 <div>
                   <div className={`flex justify-between text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <span>Capacity Limit (Bounded Stack)</span>
+                    <span>{t.visualizer.capacityLabel}</span>
                     <span className={`font-mono font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{capacity} slots</span>
                   </div>
                   <input
@@ -696,7 +710,7 @@ export function StackVisualizer() {
 
                 <div>
                   <div className={`flex justify-between text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                    <span>Animation Speed</span>
+                    <span>{t.visualizer.speedLabel}</span>
                     <span className={`font-mono font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{animSpeed}x</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -714,7 +728,7 @@ export function StackVisualizer() {
                             : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
                         }`}
                       >
-                        {speed === 0.5 ? '0.5x Slow' : speed === 1 ? '1.0x Normal' : '2.0x Fast'}
+                        {speed === 0.5 ? '0.5x' : speed === 1 ? '1.0x' : '2.0x'}
                       </button>
                     ))}
                   </div>
@@ -733,10 +747,10 @@ export function StackVisualizer() {
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}>
                   <Terminal className="w-4 h-4 text-emerald-500" />
-                  <span>Execution Timeline</span>
+                  <span>{t.visualizer.timelineTitle}</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-500">
-                  {operationLog.length} events
+                  {operationLog.length} {t.visualizer.eventsCount}
                 </span>
               </div>
 

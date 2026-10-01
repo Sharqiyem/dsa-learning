@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { 
   DOCUMENTATION_DATA, 
+  DOCUMENTATION_DATA_AR,
   STEP_BY_STEP_DOCUMENTATION_MARKDOWN, 
 } from '@/data/documentationData';
 import { 
@@ -10,12 +11,18 @@ import {
   CheckCircle2, 
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function StepByStepDocs() {
   const { isDark } = useTheme();
-  const [activeStepId, setActiveStepId] = useState<string>(DOCUMENTATION_DATA[0].id);
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
 
-  const activeDoc = DOCUMENTATION_DATA.find((d) => d.id === activeStepId) || DOCUMENTATION_DATA[0];
+  const docs = isArabic ? DOCUMENTATION_DATA_AR : DOCUMENTATION_DATA;
+
+  const [activeStepId, setActiveStepId] = useState<string>(docs[0].id);
+
+  const activeDoc = docs.find((d) => d.id === activeStepId) || docs[0];
 
   const handleDownloadDocs = () => {
     const blob = new Blob([STEP_BY_STEP_DOCUMENTATION_MARKDOWN], { type: 'text/markdown' });
@@ -40,17 +47,15 @@ export function StepByStepDocs() {
             <div className={`flex items-center gap-2 text-xs font-mono mb-2 ${
               isDark ? 'text-cyan-400' : 'text-cyan-600 font-semibold'
             }`}>
-              <span>STEP-BY-STEP CURRICULUM</span>
-              <span aria-hidden="true">·</span>
-              <span>COMPLETE DOCUMENTATION</span>
+              <span>{t.docs.badge}</span>
             </div>
             <h2 className={`text-2xl sm:text-3xl font-bold tracking-tight ${
               isDark ? 'text-white' : 'text-slate-950'
             }`}>
-              Theoretical Foundation & System Docs
+              {t.docs.title}
             </h2>
             <p className={`mt-1 text-sm max-w-2xl ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              A comprehensive textbook-grade pedagogical manual detailing memory invariants, asymptotic bounds, architectural considerations, and defensive programming guidelines.
+              {t.docs.subtitle}
             </p>
           </div>
 
@@ -63,7 +68,7 @@ export function StepByStepDocs() {
             }`}
           >
             <Download className="w-3.5 h-3.5 text-cyan-500" />
-            <span>Download Guide (.md)</span>
+            <span>{t.docs.downloadBtn}</span>
           </button>
         </div>
 
@@ -72,9 +77,9 @@ export function StepByStepDocs() {
           {/* Chapter Navigation Sidebar (4 Cols) */}
           <div className="lg:col-span-4 space-y-2">
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 mb-2">
-              Chapters & Modules
+              {t.docs.chaptersTitle}
             </div>
-            {DOCUMENTATION_DATA.map((doc) => {
+            {docs.map((doc) => {
               const isActive = activeStepId === doc.id;
               return (
                 <button
@@ -132,7 +137,7 @@ export function StepByStepDocs() {
                     ? 'text-cyan-400 bg-cyan-950/80 border-cyan-800/80' 
                     : 'text-cyan-800 bg-cyan-100 border-cyan-300 font-semibold'
                 }`}>
-                  Chapter {activeDoc.number}
+                  {t.docs.chapterPrefix} {activeDoc.number}
                 </span>
                 <span className="text-xs font-mono text-slate-400">|</span>
                 <span className="text-xs font-mono text-slate-500">{activeDoc.badge}</span>
@@ -160,25 +165,25 @@ export function StepByStepDocs() {
               {activeDoc.content}
             </div>
 
-            {/* Optional ASCII Diagram */}
+            {/* Optional ASCII Diagram (Kept LTR for pristine alignment) */}
             {activeDoc.diagramAscii && (
               <div className={`my-6 p-4 rounded-xl border font-mono text-xs overflow-x-auto ${
                 isDark ? 'bg-slate-900 border-slate-800 text-emerald-300' : 'bg-slate-900 border-slate-800 text-emerald-300'
-              }`}>
+              }`} dir="ltr">
                 <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-2 font-mono">
-                  Conceptual Memory Structure:
+                  {t.docs.asciiDiagramTitle}
                 </div>
                 <pre className="leading-tight">{activeDoc.diagramAscii.trim()}</pre>
               </div>
             )}
 
-            {/* Optional Code Snippet / Complexity Matrix */}
+            {/* Optional Code Snippet / Complexity Matrix (Kept LTR) */}
             {activeDoc.codeSnippet && (
               <div className={`my-6 p-4 rounded-xl border font-mono text-xs overflow-x-auto ${
                 isDark ? 'bg-slate-900 border-slate-800 text-slate-200' : 'bg-slate-900 border-slate-800 text-slate-200'
-              }`}>
+              }`} dir="ltr">
                 <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-2 font-mono">
-                  Complexity Specification:
+                  {t.docs.complexityTitle}
                 </div>
                 <pre className="text-cyan-300 leading-normal">{activeDoc.codeSnippet.trim()}</pre>
               </div>
@@ -190,7 +195,7 @@ export function StepByStepDocs() {
                 isDark ? 'text-slate-300' : 'text-slate-700'
               }`}>
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                <span>Critical Architectural Invariants</span>
+                <span>{t.docs.invariantsTitle}</span>
               </h4>
               <ul className="space-y-2">
                 {activeDoc.bulletPoints.map((point, idx) => (

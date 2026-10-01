@@ -5,9 +5,11 @@ import { Layers, ExternalLink, Download } from 'lucide-react';
 import { PYTHON_DOWNLOADABLE_SCRIPT } from '@/data/pythonCodeData';
 import { STEP_BY_STEP_DOCUMENTATION_MARKDOWN } from '@/data/documentationData';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 
 export function Footer() {
   const { isDark } = useTheme();
+  const { t } = useLanguage();
 
   const handleDownloadCode = () => {
     const blob = new Blob([PYTHON_DOWNLOADABLE_SCRIPT], { type: 'text/x-python' });
@@ -49,7 +51,7 @@ export function Footer() {
               <span>StackLab</span>
             </div>
             <p className={`mt-1 text-xs max-w-md ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Interactive Data Structures & Algorithms educational lab designed for computer science students mastering LIFO mechanics, Python internals, and stack algorithms.
+              {t.footer.desc}
             </p>
           </div>
 
@@ -87,7 +89,7 @@ export function Footer() {
                 isDark ? 'text-slate-400 hover:text-emerald-400' : 'text-slate-600 hover:text-emerald-600'
               }`}
             >
-              <span>W3Schools Reference</span>
+              <span>{t.footer.w3schoolsRef}</span>
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
@@ -97,9 +99,9 @@ export function Footer() {
           isDark ? 'text-slate-500' : 'text-slate-400'
         }`}>
           <div>
-            <span>© {new Date().getFullYear()} StackLab Educational Sandbox. Built for computer science students.</span>
+            <span>© {new Date().getFullYear()} {t.footer.copyright}</span>
           </div>
-          <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex items-center gap-4 text-xs font-mono" dir="ltr">
             <span>LIFO PRINCIPLE</span>
             <span aria-hidden="true">·</span>
             <span>TIME O(1)</span>

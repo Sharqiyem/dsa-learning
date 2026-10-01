@@ -326,3 +326,277 @@ Amortized complexity is O(1) because each element is pushed and popped exactly t
     keyTakeaway: "Reversing a stack onto another stack converts Last-In-First-Out into First-In-First-Out."
   }
 ];
+
+export const EXERCISES_DATA_AR: Exercise[] = [
+  {
+    id: "ex-1",
+    category: "Fundamentals",
+    difficulty: "Easy",
+    title: "1. مبدأ LIFO وتشبيه مكدس أطباق الطعام",
+    question: "يقوم عامل مطعم بوضع 5 صواني طعام في موزع زنبركي بالترتيب التالي: Red, Green, Blue, Yellow, Orange. بعد ذلك أخذ طالب صينيتين، ثم أضاف العامل صينية Purple، ثم أخذ طالب آخر صينية واحدة. أي صينية توجد الآن في قمة الموزع (TOP)؟",
+    options: [
+      "Orange",
+      "Yellow",
+      "Purple",
+      "Blue"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `تتبع المكدس خطوة بخطوة:
+1. الموزع يستقبل بالترتيب: [Red (قاع), Green, Blue, Yellow, Orange (قمة)]
+2. طالب يسحب صينيتين: سحب Orange ثم Yellow. المتبقي: [Red, Green, Blue]
+3. العامل يضيف صينية: دفع 'Purple'. المكدس الآن: [Red, Green, Blue, Purple (قمة)]
+4. طالب آخر يسحب صينية: سحب 'Purple'.
+5. المتبقي في المكدس: [Red, Green, Blue].
+إذن الصينية الموجودة في القمة TOP هي 'Blue'.`,
+    keyTakeaway: "عمليات المكدس تخضع حصراً لقاعدة LIFO (الداخل آخراً يخرج أولاً)."
+  },
+  {
+    id: "ex-2",
+    category: "Operation Tracing",
+    difficulty: "Easy",
+    title: "2. تتبع العمليات وحساب حجم المكدس النهائي",
+    question: "بدءاً بمكدس فارغ S، تتبع ناتج العمليات التالية:\nS.push(7)\nS.push(12)\nS.pop()\nS.push(3)\nS.push(9)\nS.pop()\nS.push(15)\nS.pop()\nS.pop()\nما هو العنصر الموجود في قمة المكدس TOP وما هو حجم المكدس (Size)؟",
+    options: [
+      "Top: 7, Size: 1",
+      "Top: 3, Size: 1",
+      "Top: 12, Size: 2",
+      "Stack is empty, Size: 0"
+    ],
+    correctOptionIndex: 0,
+    solutionExplanation: `تتبع العمليات زمنياً:
+1. push(7) -> [7]
+2. push(12) -> [7, 12]
+3. pop() -> يُرجع 12. المتبقي: [7]
+4. push(3) -> [7, 3]
+5. push(9) -> [7, 3, 9]
+6. pop() -> يُرجع 9. المتبقي: [7, 3]
+7. push(15) -> [7, 3, 15]
+8. pop() -> يُرجع 15. المتبقي: [7, 3]
+9. pop() -> يُرجع 3. المتبقي: [7]
+
+الحالة النهائية: المكدس يحتوي على [7].
+عنصر القمة TOP هو 7.
+الحجم Size هو 1.`,
+    keyTakeaway: "كل عملية push تزيد الحجم بـ 1 وكل pop تنقصه بـ 1. عدد الإضافات 5 والسحب 4، المتبقي = 1."
+  },
+  {
+    id: "ex-3",
+    category: "Fundamentals",
+    difficulty: "Easy",
+    title: "3. التعقيد الحسابي لعمليات المكدس الأساسية",
+    question: "ما هو التعقيد الزمني (Time Complexity) لدوال push و pop و peek عند استخدام بناء مثالي لمكدس البيانات (مثل collections.deque أو Linked List)؟",
+    options: [
+      "Push: O(1), Pop: O(n), Peek: O(1)",
+      "Push: O(1), Pop: O(1), Peek: O(1)",
+      "Push: O(n), Pop: O(1), Peek: O(n)",
+      "Push: O(log n), Pop: O(1), Peek: O(1)"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `في التطبيق المثالي للمكدس:
+- push(): إضافة مؤشر عند القمة مباشرة دون زحزحة عناصر -> O(1)
+- pop(): حذف مؤشر القمة مباشرة -> O(1)
+- peek(): قراءة قيمة القمة عبر المؤشر مباشرة -> O(1)
+- isEmpty(): فحص الحجم == 0 -> O(1)
+لا تتطلب أي من هذه العمليات المرور على عناصر المجموعة.`,
+    keyTakeaway: "عمليات المكدس مقصورة تماماً على طرف واحد (القمة TOP) مما يضمن زمناً ثابتاً O(1)."
+  },
+  {
+    id: "ex-4",
+    category: "Real-World Apps",
+    difficulty: "Medium",
+    title: "4. التحقق من تطابق الأقواس (Balanced Parentheses)",
+    question: "باستخدام مكدس Stack لفحص تطابق الأقواس في النص '{[()]}'، ماذا يحدث عندما يقرأ الماسح الرمز ')'؟",
+    options: [
+      "المكدس يحتوي ['{', '[', '(']، ويتم سحب '(' ومقارنته مع ')'",
+      "المكدس يكون فارغاً لأن جميع الأقواس السابقة أُغلقت",
+      "المكدس يحتوي [')', '(', '[', '{']",
+      "يحدث خطأ تجاوز سعة المكدس StackOverflow"
+    ],
+    correctOptionIndex: 0,
+    solutionExplanation: `تتبع فحص '{[()]}':
+1. قراءة '{': قوس فتح -> push. المكدس: ['{']
+2. قراءة '[': قوس فتح -> push. المكدس: ['{', '[']
+3. قراءة '(': قوس فتح -> push. المكدس: ['{', '[', '(']
+4. قراءة ')': قوس إغلاق! فحص قمة المكدس:
+   - القمة هي '('.
+   - '(' يطابق ')'. سحب '(' عبر pop.
+   - المكدس يصبح: ['{', '['].`,
+    keyTakeaway: "المكدس هو الهيكل الأنسب لتحليل التراكيب المتداخلة لأن القوس المفتوح آخراً يجب أن يُغلق أولاً."
+  },
+  {
+    id: "ex-5",
+    category: "Code Output",
+    difficulty: "Medium",
+    title: "5. ناتج تنفيذ كود بايثون مع Stack",
+    question: "ما هو ناتج طباعة كود بايثون التالي؟\n```python\ns = []\nfor x in [10, 20, 30]:\n    s.append(x)\nwhile s:\n    print(s.pop(), end=' ')\n```",
+    options: [
+      "10 20 30",
+      "30 20 10",
+      "30 30 30",
+      "10 10 10"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `الخطوة 1: دفع 10 ثم 20 ثم 30 داخل القائمة s:
+s = [10, 20, 30] (العنصر 30 في القمة).
+
+الخطوة 2: حلقة while s:
+- الدورة الأولى: s.pop() تستخرج 30 وتطبع '30 '
+- الدورة الثانية: s.pop() تستخرج 20 وتطبع '20 '
+- الدورة الثالثة: s.pop() تستخرج 10 وتطبع '10 '
+- تصبح القائمة فارغة وتنتهي الحلقة.
+
+الناتج: 30 20 10`,
+    keyTakeaway: "دفع العناصر داخل المكدس ثم سحبها يعكس ترتيبها الأصلي تماماً."
+  },
+  {
+    id: "ex-6",
+    category: "Real-World Apps",
+    difficulty: "Medium",
+    title: "6. عمق مكدس استدعاء المعالج في الدوال العودية (Recursion)",
+    question: "بالنظر للدالة العودية التالية:\n```python\ndef countdown(n):\n    if n <= 0:\n        return\n    countdown(n - 1)\n```\nعند استدعاء countdown(4)، ما هو أقصى عدد من إطارات Stack Frames النشطة معاً في الذاكرة؟",
+    options: [
+      "4 إطارات (4 frames)",
+      "5 إطارات (5 frames)",
+      "إطار واحد (1 frame)",
+      "8 إطارات (8 frames)"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `تتبع إطارات مكدس المعالج Call Stack:
+1. countdown(4) - يستدعي countdown(3) [العمق: 1]
+2. countdown(3) - يستدعي countdown(2) [العمق: 2]
+3. countdown(2) - يستدعي countdown(1) [العمق: 3]
+4. countdown(1) - يستدعي countdown(0) [العمق: 4]
+5. countdown(0) - n <= 0 يتحقق شرط التوقف! [العمق: 5]
+
+في هذه اللحظة، تتواجد جميع الإطارات الخمسة في الذاكرة معاً قبل البدء في العودة.
+أقصى عمق = n + 1 = 5.`,
+    keyTakeaway: "تعتمد الدوال العودية على مكدس النظام Call Stack لتخزين المتغيرات المحلية وعناوين العودة."
+  },
+  {
+    id: "ex-7",
+    category: "Fundamentals",
+    difficulty: "Medium",
+    title: "7. الفرق بين Stack Overflow و Stack Underflow",
+    question: "أي من الحالات التالية تسبب خطأ 'Stack Underflow'؟",
+    options: [
+      "محاولة تنفيذ push() عند امتلاء مساحة الذاكرة بالكامل",
+      "محاولة تنفيذ pop() أو peek() على مكدس فارغ",
+      "وجود دالة عودية لانهائية بدون شرط توقف",
+      "محاولة دفع نوع بيانات غير متوافق داخل المكدس"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `- خطأ Underflow: يحدث عند محاولة القراءة أو السحب (pop/peek) من مكدس فارغ لا يحتوي عناصر.
+- خطأ Overflow: يحدث عند محاولة إضافة عناصر (push) لمكدس تجاوز سعته القصوى أو تجاوز ذاكرة المعالج المتاحة.`,
+    keyTakeaway: "Underflow = محاولة السحب من فارغ. Overflow = محاولة الإضافة فوق السعة."
+  },
+  {
+    id: "ex-8",
+    category: "Algorithms",
+    difficulty: "Hard",
+    title: "8. تحويل الأعداد من النظام العشري إلى الثنائي باستخدام Stack",
+    question: "لتحويل الرقم 25 إلى ثنائي، نقسم على 2 وندفع البواقي في مكدس:\n25 / 2 = 12 والباقي 1\n12 / 2 = 6 والباقي 0\n6 / 2 = 3 والباقي 0\n3 / 2 = 1 والباقي 1\n1 / 2 = 0 والباقي 1\nعند سحب كافة البواقي عبر pop()، ما هو النص الثنائي الناتج؟",
+    options: [
+      "10011",
+      "11001",
+      "01100",
+      "11100"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `البواقي المدفوعة في المكدس بالترتيب:
+[1, 0, 0, 1, 1 (القمة)]
+
+عند السحب عبر pop():
+pop() -> '1'
+pop() -> '1'
+pop() -> '0'
+pop() -> '0'
+pop() -> '1'
+
+الناتج: '11001' (16 + 8 + 1 = 25).`,
+    keyTakeaway: "يقوم Stack بعكس ترتيب البواقي وهو أمر ضروري رياضياً لأن الخانة الأقل وزناً LSB تُحسب أولاً لكن يجب طباعتها آخراً."
+  },
+  {
+    id: "ex-9",
+    category: "Algorithms",
+    difficulty: "Hard",
+    title: "9. تصميم هيكل Min-Stack بتعقيد O(1)",
+    question: "كيف يمكنك تصميم هيكل بيانات Stack يدعم دوال push و pop ودالة getMin() لمعرفة أصغر عنصر، جميعها بزمن O(1)؟",
+    options: [
+      "ترتيب مصفوفة المكدس تصاعدياً بعد كل عملية push",
+      "المرور على كافة العناصر بحلقة تكرار عند استدعاء getMin()",
+      "الاحتفاظ بمكدس مساعد ثانٍ يخزن القيمة الصغرى عند كل عمق",
+      "استخدام البحث الثنائي Binary Search داخل المكدس"
+    ],
+    correctOptionIndex: 2,
+    solutionExplanation: `الحل القياسي لمسألة Min-Stack:
+- الاحتفاظ بمكدسين: main_stack و min_stack.
+- عند push(val): يدفع في main_stack، وإذا كانت القيمة أصغر أو تساوي قمة min_stack، تُدفع في min_stack أيضاً.
+- عند pop(): يُسحب من main_stack، وإذا تطابقت القيمة مع قمة min_stack تُسحب منه أيضاً.
+- عند getMin(): يُستعلم عن قمة min_stack مباشرة بزمن O(1).`,
+    keyTakeaway: "استخدام مكدس إضافي مساعد يتيح تتبع الخصائص التراكمية (كالحد الأدنى) بزمن فوري O(1)."
+  },
+  {
+    id: "ex-10",
+    category: "Code Output",
+    difficulty: "Medium",
+    title: "10. تقييم التعابير الرياضية بصيغة البوستفيكس (Postfix)",
+    question: "عند تقييم التعبير '4 5 2 + *' باستخدام Stack (الأرقام تُدفع، والعمليات تسحب معاملين وتدفع النتيجة)، ما هي القيمة النهائية؟",
+    options: [
+      "28",
+      "22",
+      "40",
+      "14"
+    ],
+    correctOptionIndex: 0,
+    solutionExplanation: `تتبع تقييم '4 5 2 + *':
+1. دفع 4 -> [4]
+2. دفع 5 -> [4, 5]
+3. دفع 2 -> [4, 5, 2]
+4. المعامل '+': سحب 2 ثم 5 -> حساب 5 + 2 = 7 -> دفع 7. المكدس: [4, 7]
+5. المعامل '*': سحب 7 ثم 4 -> حساب 4 * 7 = 28 -> دفع 28. المكدس: [28]
+القيمة النهائية: 28.`,
+    keyTakeaway: "صيغة Postfix (RPN) لا تحتاج إلى أقواس لأن ترتيب المعاملات والمشغلات يحدد أولوية العمليات بدقة."
+  },
+  {
+    id: "ex-11",
+    category: "Real-World Apps",
+    difficulty: "Medium",
+    title: "11. معمارية زري الرجوع والتقدم في متصفحات الويب",
+    question: "كيف تطبق متصفحات الويب (Chrome, Firefox, Safari) تاريخ التصفح لزري Back و Forward؟",
+    options: [
+      "طابور أحادي Queue يحذف أقدم الزيارات",
+      "مكدسان متكاملان: مكدس للخلف (Back Stack) ومكدس للأمام (Forward Stack)",
+      "جدول هاش Hash Table يربط الروابط بالوقت",
+      "شجرة بحث ثنائية مرتبة هجائياً"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `معمارية التصفح في المتصفحات:
+- Back Stack: مكدس يحفظ الصفحات السابقة.
+- Forward Stack: مكدس يحفظ الصفحات التي تم الرجوع منها.
+الضغط على رابط جديد يدفع الصفحة في Back Stack ويفرغ Forward Stack.
+الضغط على 'Back' يسحب من Back Stack ويدفع في Forward Stack.`,
+    keyTakeaway: "المكدسان المتكاملان يوفران نظاماً أنيقاً لحفظ واسترجاع الحالات الثنائية الاتجاه."
+  },
+  {
+    id: "ex-12",
+    category: "Algorithms",
+    difficulty: "Hard",
+    title: "12. بناء طابور FIFO باستخدام مكدسين LIFO",
+    question: "لديك مكدسان (stack1 و stack2). كيف يمكنك بناء طابور Queue يدعم عمليتي enqueue و dequeue؟",
+    options: [
+      "enqueue تدفع في stack1 مباشرة، و dequeue تسحب من stack1 مباشرة",
+      "enqueue تدفع في stack1. وفي dequeue: إذا كان stack2 فارغاً، يتم إفراغ كافة عناصر stack1 وسكبها في stack2، ثم السحب من stack2",
+      "يتم الدفع والسحب عشوائياً بين المكدسين",
+      "من المستحيل رياضياً تحويل سلوك LIFO إلى FIFO"
+    ],
+    correctOptionIndex: 1,
+    solutionExplanation: `مبدأ العكس المزدوج:
+- عكس مكدس LIFO مرة واحدة يُحوله إلى FIFO!
+- الإدراج (enqueue): يُضاف دائماً في stack1.
+- الإخراج (dequeue):
+  - إذا كان stack2 فارغاً: نسحب جميع عناصر stack1 وندفعها في stack2، مما يعكس الترتيب بحيث يصبح أقدم عنصر في القمة!
+  - نسحب قمة stack2.
+التعقيد المستهلك (Amortized Time) هو O(1) لأن كل عنصر يُدفع ويُسحب مرتين فقط طوال دورة حياته.`,
+    keyTakeaway: "سكب مكدس في مكدس آخر يعكس ترتيب البيانات من Last-In-First-Out إلى First-In-First-Out."
+  }
+];
