@@ -130,17 +130,17 @@ Occurs when elements are pushed beyond available memory or beyond a configured c
 1. **Compiler Syntax Parsers & Linters**:
    Compilers use stacks to parse Abstract Syntax Trees (ASTs), balance braces/parentheses, and resolve operator precedence using Edsger Dijkstra's Shunting-Yard Algorithm.
 
-2. **Call Stack & Memory Management**:
-   Whenever a function calls another function, the CPU pushes a stack frame containing local variables, parameters, and return program counter (PC) address. When the function returns, the frame pops off.
+2. **Call Stack & Memory Management (CPU Call Stack)**:
+   Whenever a function calls another function, the CPU pushes an activation stack frame containing local variables, parameters, and the return address. When the function returns, the frame pops off.
 
 3. **Undo/Redo Architecture (Mementos)**:
-   Desktop tools like Photoshop, Word, and VS Code maintain an Undo Stack and a Redo Stack storing command deltas.
+   Text editors and design software (Photoshop, VS Code) maintain an Undo Stack and a Redo Stack to track and restore state transitions.
 
 4. **Depth-First Search (DFS) & Backtracking**:
-   Graph traversal, maze solving, puzzle solving (Sudoku, N-Queens) simulate back-tracking decisions using a stack.
+   Graph traversal, maze solving, puzzle solving (Sudoku, N-Queens) simulate backtracking decisions using a stack.
 
-5. **Reverse Polish Notation (RPN) Calculators**:
-   Hewlett-Packard financial calculators and Forth/PostScript languages evaluate mathematical operations using an evaluation stack without requiring parentheses.`,
+5. **Reverse Polish Notation (RPN) Calculators & Expression Evaluation**:
+   Evaluates mathematical expressions (Postfix notation) without requiring parentheses, processing operands and operators via a single LIFO evaluation stack.`,
     bulletPoints: [
       "Any problem involving 'nested structure' or 'reversing order' naturally belongs to a Stack.",
       "Compilers convert human-friendly Infix notation 'A + B * C' to Postfix 'A B C * +' using a stack.",
@@ -266,20 +266,20 @@ PUSH  |  Element [TOP]   |  ---> PUSH adds here
     summary: "لماذا يُعد Stack العمود الفقري للمترجمات وبيئات التشغيل وأنظمة التشغيل.",
     content: `أين يُستخدم Stack في البرمجيات التي نستخدمها يومياً؟
 
-1. **المترجمات وتحليل الأكواد ولغات البرمجة**:
+1. **المترجمات وتحليل الأكواد ولغات البرمجة (Compilers & Parsers)**:
    تستخدم المترجمات Stack لبناء شجرة القواعد اللغوية (AST) ومطابقة الأقواس وتحويل الصيغ الحسابية عبر خوارزمية Shunting-Yard.
 
-2. **مكدس استدعاء المعالج وإدارة الذاكرة (Call Stack)**:
-   كلما استدعى البرنامج دالة، يقوم المعالج بدفع إطار Stack Frame يحمل المتغيرات المحلية وعنوان العودة في البرنامج.
+2. **مكدس استدعاء المعالج وإدارة الذاكرة (CPU Call Stack)**:
+   كلما استدعى البرنامج دالة، يقوم المعالج بدفع إطار Stack Frame يحمل المتغيرات المحلية ومعاملات الدالة وعنوان العودة في البرنامج.
 
 3. **أنظمة التراجع والإعادة (Undo/Redo)**:
-   محررات النصوص وأدوات التصميم (Photoshop, VS Code) تحتفظ بمكدسين Undo Stack و Redo Stack.
+   محررات النصوص وأدوات التصميم (Photoshop, VS Code) تحتفظ بمكدسين متكاملين: Undo Stack و Redo Stack لحفظ واسترجاع الحالات السابقة.
 
 4. **خوارزميات البحث في العمق والمسارات (DFS & Backtracking)**:
-   حل المتاهات وألغاز الشطرنج والسودوكو يعتمد على العودة للخلف باستخدام Stack.
+   حل المتاهات وألغاز الشطرنج والسودوكو وشبكات الرسوم البيانية يعتمد على تتبع المسارات والعودة للخلف باستخدام Stack.
 
-5. **الآلات الحاسبة وتقييم التعابير الرياضية**:
-   تقييم الصيغ المعكوسة (Reverse Polish Notation) بدون الحاجة إلى أقواس.`,
+5. **الآلات الحاسبة وتقييم التعابير الرياضية (RPN Calculators)**:
+   تقييم الصيغ المعكوسة (Reverse Polish Notation) بدون الحاجة إلى أقواس، عبر معالجة الأرقام والعمليات الحسابية داخل المكدس.`,
     bulletPoints: [
       "أي مسألة تتضمن بنية متداخلة أو عكساً للترتيب تُحل بصورة مثالية عبر Stack.",
       "تحول المترجمات صيغ الحساب البشرية 'A + B * C' إلى صيغة البوستفيكس 'A B C * +' عبر Stack.",
@@ -290,58 +290,215 @@ PUSH  |  Element [TOP]   |  ---> PUSH adds here
 
 export const STEP_BY_STEP_DOCUMENTATION_MARKDOWN = `# Complete Guide to the Stack Data Structure (DSA)
 
-## 1. Introduction
-The Stack is one of the most fundamental data structures in computer science. It follows the **LIFO (Last In, First Out)** principle: the last element added to the stack is the first element to be removed.
+## 1. Introduction & LIFO Principle
+The Stack is one of the foundational linear data structures in computer science. It operates strictly under the **LIFO (Last In, First Out)** principle: the most recently inserted element is always the first one to be removed.
 
-### Real-Life Analogies
-- **Stack of Plates**: You place plates on top and take plates from the top.
-- **Undo/Redo**: Your latest keystroke is undone first.
-- **Browser History**: Clicking 'Back' takes you to the most recent page you visited.
+### Real-Life Analogies:
+- **Stack of Dinner Plates**: Clean plates are placed on the top of the stack and taken from the top. The first plate set down at the bottom is only retrieved after all others have been removed.
+- **Document Undo/Redo**: Your latest keystroke or canvas stroke is reverted first.
+- **Browser Navigation History**: Clicking the 'Back' button returns you to the most recently visited page.
 
 ---
 
 ## 2. Core Abstract Data Type (ADT) Operations
-| Method | Description | Time Complexity |
-|---|---|---|
-| \`push(item)\` | Inserts an item onto the top of the stack | O(1) |
-| \`pop()\` | Removes and returns the top item | O(1) |
-| \`peek()\` | Returns the top item without removing it | O(1) |
-| \`is_empty()\` | Returns True if stack has no elements | O(1) |
-| \`size()\` | Returns total number of elements | O(1) |
-| \`is_full()\` | For bounded stacks, checks if capacity is reached | O(1) |
+Every compliant stack Abstract Data Type specifies the following primitive operations:
+
+| Method | Description | Time Complexity | Auxiliary Space |
+|---|---|---|---|
+| \`push(item)\` | Inserts an element onto the top of the stack | O(1) amortized | O(1) |
+| \`pop()\` | Removes and returns the top element | O(1) strict | O(1) |
+| \`peek()\` | Inspects the top element without mutating the stack | O(1) strict | O(1) |
+| \`is_empty()\` | Returns True if the stack contains zero elements | O(1) strict | O(1) |
+| \`size()\` | Returns the total count of elements currently stored | O(1) strict | O(1) |
+| \`is_full()\` | For bounded capacity stacks: checks if max limit is reached | O(1) strict | O(1) |
 
 ---
 
-## 3. Python Implementation (Object-Oriented)
+## 3. Underlying Data Structures: Arrays vs. Linked Lists
+When implementing a stack in systems programming, two primary storage models are employed:
+
+1. **Dynamic Array (e.g., Python \`list\`, C++ \`std::vector\`)**:
+   - Stores elements in a contiguous block of RAM.
+   - The top of the stack maps to \`array[size - 1]\`.
+   - **Pros**: Exceptional CPU cache locality and zero per-node pointer overhead.
+   - **Cons**: Periodic capacity doubling requires allocating a larger memory buffer and copying pointers (amortized O(1), but occasional O(n) spikes).
+
+2. **Linked Nodes / Chunked Deque (e.g., Python \`collections.deque\`)**:
+   - In CPython, \`deque\` is constructed from doubly-linked 64-element memory chunks.
+   - **Pros**: Guaranteed strict O(1) push and pop without memory reallocation spikes.
+   - **Cons**: Minor pointer indirection overhead per node chunk.
+
+---
+
+## 4. Edge Cases: Stack Overflow & Stack Underflow
+1. **Stack Underflow**:
+   Occurs when code attempts to execute \`pop()\` or \`peek()\` on an empty stack. In Python, attempting to index an empty list (\`stack[-1]\`) raises an \`IndexError: list index out of range\`. Robust production code must always guard with \`is_empty()\`.
+
+2. **Stack Overflow**:
+   Occurs when elements are pushed beyond available memory or beyond a configured capacity limit. In recursion, missing base cases cause stack frames to exceed \`sys.getrecursionlimit()\` (default 1000 in CPython), raising \`RecursionError\`.
+
+---
+
+## 5. Essential Real-World Software Engineering Applications
+1. **Compiler Syntax Parsers & Linters**:
+   Compilers use stacks to parse Abstract Syntax Trees (ASTs), balance brackets/parentheses, and resolve operator precedence using Dijkstra's Shunting-Yard Algorithm.
+
+2. **Call Stack & Memory Management (CPU Call Stack)**:
+   Whenever a function is called, the CPU pushes an activation stack frame containing local variables, parameters, and the return address. When the function returns, the frame pops off.
+
+3. **Undo/Redo Architecture (Mementos)**:
+   Text editors and design software (Photoshop, VS Code) maintain an Undo Stack and a Redo Stack to track and restore state transitions.
+
+4. **Depth-First Search (DFS) & Backtracking**:
+   Graph traversal, maze solving, puzzle solving (Sudoku, N-Queens) simulate backtracking decisions using a stack.
+
+5. **Reverse Polish Notation (RPN) Calculators & Expression Evaluation**:
+   Evaluates mathematical expressions (Postfix notation) without requiring parentheses, processing operands and operators via a single LIFO evaluation stack.
+
+---
+
+## 6. Complete Python OOP Stack Implementation
 \`\`\`python
 class Stack:
+    """A clean, robust LIFO Stack implementation in Python."""
+    
     def __init__(self):
+        # Internal private list storage
         self._items = []
 
     def push(self, item):
+        """Add an element to the top of the stack."""
         self._items.append(item)
 
     def pop(self):
+        """Remove and return top element. Raises IndexError if empty."""
         if self.is_empty():
             raise IndexError("Stack Underflow: Cannot pop from an empty stack.")
         return self._items.pop()
 
     def peek(self):
+        """Return top element without removing it. Raises IndexError if empty."""
         if self.is_empty():
             raise IndexError("Stack Underflow: Cannot peek at an empty stack.")
         return self._items[-1]
 
     def is_empty(self) -> bool:
+        """Return True if stack has no elements."""
         return len(self._items) == 0
 
     def size(self) -> int:
+        """Return number of elements in stack."""
         return len(self._items)
+
+    def __repr__(self) -> str:
+        return f"Stack({self._items}) <- TOP"
 \`\`\`
+`;
+
+export const STEP_BY_STEP_DOCUMENTATION_MARKDOWN_AR = `# الدليل الشامل لهيكل بيانات مكدس البيانات Stack (DSA)
+
+## 1. المقدمة ومفهوم مكدس البيانات ومبدأ LIFO
+المكدس (Stack) هو أحد أهم وأبسط هياكل البيانات الخطية في علوم الحاسوب. يخضع المكدس لقاعدة **LIFO (Last In, First Out)**، أي أن "الداخل آخراً هو الخارج أولاً".
+
+### تشبيهات من الحياة الواقعية:
+- **مكدس أطباق الطعام**: توضع الأطباق النظيفة فوق بعضها في القمة (TOP)، وعند الحاجة يُسحب الطبق العلوي أولاً. الطبق الذي وُضع أولاً في الأسفل لا يمكن الوصول إليه إلا بعد رفع جميع الأطباق التي تعلوه.
+- **التراجع في الكتابة (Undo)**: آخر حرف أو كلمة كتبتها هي أول ما يتم التراجع عنه.
+- **تاريخ المتصفح (Browser History)**: زر الرجوع للخلف يأخذك لآخر صفحة زرتها أولاً.
 
 ---
 
-## 4. Key Takeaways & Best Practices
-1. **Never pop from an empty stack** without checking \`is_empty()\`.
-2. In Python, use \`list.append()\` and \`list.pop()\`. **Avoid \`list.insert(0, item)\` and \`list.pop(0)\`**, which incur O(n) time complexity.
-3. For heavy-throughput stacks with millions of items, prefer \`collections.deque\` to avoid memory reallocation pauses.
+## 2. العمليات الأساسية لمكدس البيانات (ADT) والتعقيد الزمني
+المواصفة الكاملة لواجهة Stack تشمل العمليات التالية:
+
+| الدالة (Method) | الوصف (Description) | التعقيد الزمني (Time Complexity) | التعقيد المكاني (Space) |
+|---|---|---|---|
+| \`push(item)\` | إدراج عنصر جديد في قمة المكدس TOP | O(1) amortized | O(1) |
+| \`pop()\` | حذف واسترجاع عنصر القمة | O(1) strict | O(1) |
+| \`peek()\` | معاينة عنصر القمة دون إزالته | O(1) strict | O(1) |
+| \`is_empty()\` | فحص ما إذا كان المكدس خالياً من العناصر | O(1) strict | O(1) |
+| \`size()\` | إرجاع العدد الإجمالي للعناصر | O(1) strict | O(1) |
+| \`is_full()\` | في المكدسات محدودة السعة: فحص بلوغ الحد الأقصى | O(1) strict | O(1) |
+
+---
+
+## 3. بنى البيانات التحتية: المصفوفات مقابل القوائم المتصلة
+عند بناء Stack في لغات البرمجة، توجد بنيتان أساسيتان:
+
+1. **المصفوفة الديناميكية Dynamic Array (مثل \`list\` في بايثون)**:
+   - تخزن العناصر في مساحة متجاورة في ذاكرة RAM.
+   - موضع القمة TOP يطابق المؤشر الأخير \`array[size - 1]\`.
+   - **المزايا**: استغلال فائق لذاكرة التخزين المؤقت للمعالج (CPU Cache Locality)، سرعة فائقة في القراءة.
+   - **العيوب**: تضاعف السعة أحياناً يضطر المفسر لنسخ العناصر لمخزن أكبر (Amortized O(1)).
+
+2. **القوائم المتصلة والمكتبات المقسمة (مثل \`collections.deque\` في بايثون)**:
+   - في CPython، تُبنى \`deque\` من كتل ثابتة من 64 عنصراً مترابطة ثنائياً.
+   - **المزايا**: زمن ثابت O(1) حقيقي ودائم لكافة عمليات push و pop دون أي انقطاع لنقل الذاكرة.
+   - **العيوب**: استهلاك إضافي لمؤشرات الذاكرة مقارنة بالمصفوفة المتجاورة البسيطة.
+
+---
+
+## 4. الحالات الحرجة والممارسات الدفاعية
+1. **خطأ Stack Underflow**:
+   يحدث عند محاولة سحب (\`pop\`) أو معاينة (\`peek\`) عنصر من مكدس فارغ. في بايثون، محاولة الوصول إلى \`stack[-1]\` ترفع \`IndexError: list index out of range\`. الحل هو التحقق دائماً من \`is_empty()\` قبل السحب.
+
+2. **خطأ Stack Overflow**:
+   يحدث عند دفع عناصر تتجاوز الذاكرة المتاحة أو السعة المقررة. في الدوال العودية (Recursion)، الاستدعاء غير المنتهي يتجاوز حد بايثون (\`sys.getrecursionlimit()\`) ويرفع \`RecursionError: maximum recursion depth exceeded\`.
+
+---
+
+## 5. تطبيقات هندسة البرمجيات الواقعية لـ Stack
+1. **المترجمات وتحليل الأكواد ولغات البرمجة (Compilers & Parsers)**:
+   تستخدم المترجمات Stack لبناء شجرة القواعد اللغوية (AST) ومطابقة الأقواس وتحويل الصيغ الحسابية عبر خوارزمية Shunting-Yard.
+
+2. **مكدس استدعاء المعالج وإدارة الذاكرة (CPU Call Stack)**:
+   كلما استدعى البرنامج دالة، يقوم المعالج بدفع إطار Stack Frame يحمل المتغيرات المحلية ومعاملات الدالة وعنوان العودة في البرنامج.
+
+3. **أنظمة التراجع والإعادة (Undo/Redo)**:
+   محررات النصوص وأدوات التصميم (Photoshop, VS Code) تحتفظ بمكدسين متكاملين: Undo Stack و Redo Stack لحفظ واسترجاع الحالات السابقة.
+
+4. **خوارزميات البحث في العمق والمسارات (DFS & Backtracking)**:
+   حل المتاهات وألغاز الشطرنج والسودوكو وشبكات الرسوم البيانية يعتمد على تتبع المسارات والعودة للخلف باستخدام Stack.
+
+5. **الآلات الحاسبة وتقييم التعابير الرياضية (RPN Calculators)**:
+   تقييم الصيغ المعكوسة (Reverse Polish Notation) بدون الحاجة إلى أقواس، عبر معالجة الأرقام والعمليات الحسابية داخل المكدس.
+
+---
+
+## 6. الكود النموذجي بلغة بايثون (Object-Oriented Implementation)
+\`\`\`python
+class Stack:
+    """بناء فئة مكدس البيانات بلغة بايثون وفق مبادئ البرمجة كائنية التوجه (OOP)."""
+    
+    def __init__(self):
+        # مصفوفة تخزين خاصة
+        self._items = []
+
+    def push(self, item):
+        """إضافة عنصر إلى قمة المكدس."""
+        self._items.append(item)
+
+    def pop(self):
+        """حذف واسترجاع عنصر القمة. يرفع IndexError إذا كان المكدس فارغاً."""
+        if self.is_empty():
+            raise IndexError("Stack Underflow: لا يمكن السحب من مكدس فارغ.")
+        return self._items.pop()
+
+    def peek(self):
+        """معاينة عنصر القمة دون حذفه."""
+        if self.is_empty():
+            raise IndexError("Stack Underflow: لا يمكن معاينة مكدس فارغ.")
+        return self._items[-1]
+
+    def is_empty(self) -> bool:
+        """التحقق مما إذا كان المكدس فارغاً."""
+        return len(self._items) == 0
+
+    def size(self) -> int:
+        """إرجاع عدد العناصر في المكدس."""
+        return len(self._items)
+
+    def __repr__(self) -> str:
+        return f"Stack({self._items}) <- TOP"
+\`\`\`
 `;
+

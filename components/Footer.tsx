@@ -3,13 +3,16 @@
 import React from 'react';
 import { Layers, ExternalLink, Download } from 'lucide-react';
 import { PYTHON_DOWNLOADABLE_SCRIPT } from '@/data/pythonCodeData';
-import { STEP_BY_STEP_DOCUMENTATION_MARKDOWN } from '@/data/documentationData';
+import { 
+  STEP_BY_STEP_DOCUMENTATION_MARKDOWN, 
+  STEP_BY_STEP_DOCUMENTATION_MARKDOWN_AR 
+} from '@/data/documentationData';
 import { useTheme } from '@/context/ThemeContext';
 import { useLanguage } from '@/context/LanguageContext';
 
 export function Footer() {
   const { isDark } = useTheme();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleDownloadCode = () => {
     const blob = new Blob([PYTHON_DOWNLOADABLE_SCRIPT], { type: 'text/x-python' });
@@ -24,11 +27,14 @@ export function Footer() {
   };
 
   const handleDownloadDocs = () => {
-    const blob = new Blob([STEP_BY_STEP_DOCUMENTATION_MARKDOWN], { type: 'text/markdown' });
+    const isArabic = language === 'ar';
+    const content = isArabic ? STEP_BY_STEP_DOCUMENTATION_MARKDOWN_AR : STEP_BY_STEP_DOCUMENTATION_MARKDOWN;
+    const fileName = isArabic ? 'DSA_Stack_Complete_Guide_AR.md' : 'DSA_Stack_Complete_Guide_EN.md';
+    const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'DSA_Stack_Complete_Guide.md';
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

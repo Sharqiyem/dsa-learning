@@ -134,6 +134,13 @@ export interface Translations {
     asciiDiagramTitle: string;
     complexityTitle: string;
     invariantsTitle: string;
+    viewFullMdBtn: string;
+    hideFullMdBtn: string;
+    copyMdBtn: string;
+    copiedMdBtn: string;
+    downloadMdEnBtn: string;
+    downloadMdArBtn: string;
+    previewMdTitle: string;
   };
   exercises: {
     badge: string;
@@ -294,6 +301,13 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       asciiDiagramTitle: 'Conceptual Memory Structure:',
       complexityTitle: 'Complexity Specification:',
       invariantsTitle: 'Critical Architectural Invariants',
+      viewFullMdBtn: 'View Full Markdown (.md)',
+      hideFullMdBtn: 'Hide Full Markdown',
+      copyMdBtn: 'Copy Markdown',
+      copiedMdBtn: 'Copied!',
+      downloadMdEnBtn: 'Download English (.md)',
+      downloadMdArBtn: 'Download Arabic (.md)',
+      previewMdTitle: 'Complete Markdown Document Preview',
     },
     exercises: {
       badge: 'TEST YOUR UNDERSTANDING · 12 COMPREHENSIVE DRILLS',
@@ -452,6 +466,13 @@ export const TRANSLATIONS: Record<Language, Translations> = {
       asciiDiagramTitle: 'الرسم التخطيطي لهيكل الذاكرة:',
       complexityTitle: 'جدول التعقيد الحسابي والمكاني:',
       invariantsTitle: 'القواعد المعمارية الثابتة والمهمة',
+      viewFullMdBtn: 'عرض ملف التوثيق كاملاً (.md)',
+      hideFullMdBtn: 'إخفاء عرض الملف',
+      copyMdBtn: 'نسخ نص Markdown',
+      copiedMdBtn: 'تم النسخ!',
+      downloadMdEnBtn: 'تحميل النسخة الإنجليزية (.md)',
+      downloadMdArBtn: 'تحميل النسخة العربية (.md)',
+      previewMdTitle: 'معاينة ملف التوثيق الكامل بصيغة Markdown',
     },
     exercises: {
       badge: 'اختبر فهمك واستيعابك · 12 تمريناً تدريبياً شاملاً',
